@@ -3,6 +3,7 @@
 var chai = require('chai');
 var sinon = require('sinon');
 var Buildmail = require('../src/buildmail');
+var http = require('http');
 
 var expect = chai.expect;
 chai.Assertion.includeStack = true;
@@ -707,6 +708,49 @@ describe('Buildmail', function() {
                 name: '"Jõgeva Sass"',
                 address: 'a@b.c'
             }])).to.equal('=?UTF-8?Q?=22J=C3=B5geva_Sass=22?= <a@b.c>');
+        });
+    });
+
+    describe('HTTP streaming', function() {
+        var port = 10337;
+        var server;
+
+        beforeEach(function(done) {
+            server = http.createServer(function(req, res) {
+                res.writeHead(200, {
+                    'Content-Type': 'text/plain'
+                });
+                var data = new Buffer(new Array(1024 + 1).join('ä'), 'utf-8');
+                var i = 0;
+                var sendByte = function() {
+                    if (i >= data.length) {
+                        return res.end();
+                    }
+                    res.write(new Buffer([data[i++]]));
+                    setImmediate(sendByte);
+                };
+
+                sendByte();
+            });
+
+            server.listen(port, done);
+        });
+
+        afterEach(function(done) {
+            server.close(done);
+        });
+
+        it('should pipe URL as an attachment', function(done) {
+            var mb = new Buildmail('text/plain').
+            setContent({
+                href: 'http://localhost:' + port
+            });
+
+            mb.build(function(err, msg) {
+                msg = msg.toString();
+                expect(/^=C3=A4/m.test(msg)).to.be.true;
+                done();
+            });
         });
     });
 });

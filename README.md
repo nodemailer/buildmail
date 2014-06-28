@@ -286,7 +286,12 @@ node.setContent(body)
 
 Where
 
-  * **body** - *String|Buffer|Stream* body content
+  * **body** - *String|Buffer|Stream|Object* body content
+
+If the value is an object, it should include one of the following properties
+
+  * **path** - path to a file that will be used as the content
+  * **href** - URL that will be used as the content
 
 **Example**
 

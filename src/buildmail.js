@@ -7,6 +7,8 @@ var punycode = require('punycode');
 var addressparser = require('addressparser');
 var stream = require('stream');
 var PassThrough = stream.PassThrough;
+var fs = require('fs');
+var hyperquest = require('hyperquest');
 
 module.exports = MimeNode;
 
@@ -487,6 +489,7 @@ MimeNode.prototype.stream = function(outputStream, options, callback) {
     var _self = this;
     var transferEncoding = this.getTransferEncoding();
     var contentStream;
+    var localStream;
 
     // pushes node content
     function sendContent() {
@@ -514,28 +517,20 @@ MimeNode.prototype.stream = function(outputStream, options, callback) {
                 });
                 contentStream.once('end', finalize);
 
-                if (typeof _self.content.pipe === 'function') {
-                    _self.content.pipe(contentStream);
-                } else {
-                    contentStream.write(_self.content);
-                    contentStream.end();
-                }
+                localStream = _self._getStream(_self.content);
+                localStream.pipe(contentStream);
                 return;
             } else {
                 if (_self._isFlowedContent) {
-                    outputStream.write(libmime.encodeFlowed(_self.content));
+                    localStream = _self._getStream(libmime.encodeFlowed(_self.content));
                 } else {
-                    if (typeof _self.content.pipe === 'function') {
-                        _self.content.pipe(outputStream, {
-                            end: false
-                        });
-                        _self.content.once('end', finalize);
-                        return;
-                    } else {
-                        outputStream.write(_self.content);
-                    }
+                    localStream = _self._getStream(_self.content);
                 }
-                return setImmediate(finalize);
+                localStream.pipe(outputStream, {
+                    end: false
+                });
+                localStream.once('end', finalize);
+                return;
             }
         } else {
             return setImmediate(finalize);
@@ -568,6 +563,27 @@ MimeNode.prototype.stream = function(outputStream, options, callback) {
 
     outputStream.write(this.buildHeaders() + '\r\n\r\n');
     setImmediate(sendContent);
+};
+
+/**
+ * Detects and returns handle to a stream related with the content.
+ *
+ * @param {Mixed} content Node content
+ * @returns {Object} Stream object
+ */
+MimeNode.prototype._getStream = function(content) {
+    var contentStream;
+    if (typeof content.pipe === 'function') {
+        return content;
+    } else if (content && typeof content.path === 'string') {
+        return fs.createReadStream(content.path);
+    } else if (content && typeof content.href === 'string') {
+        return hyperquest(content.href);
+    } else {
+        contentStream = new PassThrough();
+        contentStream.end(content || '');
+        return contentStream;
+    }
 };
 
 /**
