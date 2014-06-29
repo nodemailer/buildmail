@@ -1,6 +1,6 @@
 {
   "name": "buildmail",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "buildmail is a low level rfc2822 message composer. Define your own mime tree, no magic included.",
   "author": "Andris Reinman <andris@kreata.ee>",
   "keywords": [
@@ -15,7 +15,7 @@
     "type": "git",
     "url": "git://github.com/andris9/buildmail.git"
   },
-  "main": "src/mailbuild",
+  "main": "src/buildmail",
   "dependencies": {
     "addressparser": "^0.3.1",
     "libmime": "^0.1.1",
