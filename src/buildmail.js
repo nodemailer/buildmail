@@ -587,7 +587,7 @@ MimeNode.prototype.stream = function(outputStream, options, callback) {
  */
 MimeNode.prototype.setEnvelope = function(envelope) {
     this._envelope = {
-        from: envelope.from ||  false,
+        from: envelope.from || false,
         to: [].concat(envelope.to || [])
     };
     return this;
