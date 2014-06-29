@@ -305,6 +305,32 @@ describe('Buildmail', function() {
             });
         });
 
+        it('should use set envelope', function(done) {
+            var mb = new Buildmail('text/plain').
+            setHeader({
+                from: 'sender@example.com',
+                to: 'receiver@example.com',
+                bcc: 'bcc@example.com'
+            }).setEnvelope({
+                from: 'a',
+                to: 'b'
+            }),
+            envelope = mb.getEnvelope();
+
+            expect(envelope).to.deep.equal({
+                from: 'a',
+                to: ['b']
+            });
+
+            mb.build(function(err, msg) {
+                msg = msg.toString();
+                expect(/^From: sender@example.com$/m.test(msg)).to.be.true;
+                expect(/^To: receiver@example.com$/m.test(msg)).to.be.true;
+                expect(!/^Bcc:/m.test(msg)).to.be.true;
+                done();
+            });
+        });
+
         it('should have unicode subject', function(done) {
             var mb = new Buildmail('text/plain').
             setHeader({

@@ -97,6 +97,12 @@ function MimeNode(contentType, options) {
     this._isFlowedContent = false;
 
     /**
+     * If set, use instead this value for envelopes instead of generating one
+     * @type {Boolean}
+     */
+    this._envelope = false;
+
+    /**
      * If content type is set (or derived from the filename) add it to headers
      */
     if (contentType) {
@@ -575,24 +581,16 @@ MimeNode.prototype.stream = function(outputStream, options, callback) {
 };
 
 /**
- * Detects and returns handle to a stream related with the content.
+ * Sets envelope to be used instead of the generated one
  *
- * @param {Mixed} content Node content
- * @returns {Object} Stream object
+ * @return {Object} SMTP envelope in the form of {from: 'from@example.com', to: ['to@example.com']}
  */
-MimeNode.prototype._getStream = function(content) {
-    var contentStream;
-    if (typeof content.pipe === 'function') {
-        return content;
-    } else if (content && typeof content.path === 'string') {
-        return fs.createReadStream(content.path);
-    } else if (content && typeof content.href === 'string') {
-        return hyperquest(content.href);
-    } else {
-        contentStream = new PassThrough();
-        contentStream.end(content || '');
-        return contentStream;
-    }
+MimeNode.prototype.setEnvelope = function(envelope) {
+    this._envelope = {
+        from: envelope.from ||  false,
+        to: [].concat(envelope.to || [])
+    };
+    return this;
 };
 
 /**
@@ -601,6 +599,10 @@ MimeNode.prototype._getStream = function(content) {
  * @return {Object} SMTP envelope in the form of {from: 'from@example.com', to: ['to@example.com']}
  */
 MimeNode.prototype.getEnvelope = function() {
+    if (this._envelope) {
+        return this._envelope;
+    }
+
     var envelope = {
         from: false,
         to: []
@@ -621,6 +623,27 @@ MimeNode.prototype.getEnvelope = function() {
 };
 
 /////// PRIVATE METHODS
+
+/**
+ * Detects and returns handle to a stream related with the content.
+ *
+ * @param {Mixed} content Node content
+ * @returns {Object} Stream object
+ */
+MimeNode.prototype._getStream = function(content) {
+    var contentStream;
+    if (typeof content.pipe === 'function') {
+        return content;
+    } else if (content && typeof content.path === 'string') {
+        return fs.createReadStream(content.path);
+    } else if (content && typeof content.href === 'string') {
+        return hyperquest(content.href);
+    } else {
+        contentStream = new PassThrough();
+        contentStream.end(content || '');
+        return contentStream;
+    }
+};
 
 /**
  * Parses addresses. Takes in a single address or an array or an

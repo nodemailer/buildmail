@@ -355,6 +355,18 @@ message.setContent(fs.createReadStream('message.txt'));
 message.createReadStream().pipe(fs.createWriteStream('message.eml'));
 ```
 
+## setEnvelope
+
+Set envelope object to use. If one is not set, it is generated based ong the headers.
+
+```javascript
+node.setEnvelope(envelope)
+```
+
+Where
+
+  * **envelope** is an envelope object in the form of `{from:'address', to: ['addresses']}`
+
 ## getEnvelope
 
 Generates a SMTP envelope object. Makes sense only for root node.
