@@ -257,7 +257,7 @@ describe('Buildmail', function() {
             });
         });
 
-        it('should not inclide bcc missing in output, but in envelope', function(done) {
+        it('should not include bcc missing in output, but in envelope', function(done) {
             var mb = new Buildmail('text/plain').
             setHeader({
                 from: 'sender@example.com',
@@ -276,6 +276,31 @@ describe('Buildmail', function() {
                 expect(/^From: sender@example.com$/m.test(msg)).to.be.true;
                 expect(/^To: receiver@example.com$/m.test(msg)).to.be.true;
                 expect(!/^Bcc:/m.test(msg)).to.be.true;
+                done();
+            });
+        });
+
+        it('should include bcc missing in output and in envelope', function(done) {
+            var mb = new Buildmail('text/plain', {
+                keepBcc: true
+            }).
+            setHeader({
+                from: 'sender@example.com',
+                to: 'receiver@example.com',
+                bcc: 'bcc@example.com'
+            }),
+            envelope = mb.getEnvelope();
+
+            expect(envelope).to.deep.equal({
+                from: 'sender@example.com',
+                to: ['receiver@example.com', 'bcc@example.com']
+            });
+
+            mb.build(function(err, msg) {
+                msg = msg.toString();
+                expect(/^From: sender@example.com$/m.test(msg)).to.be.true;
+                expect(/^To: receiver@example.com$/m.test(msg)).to.be.true;
+                expect(/^Bcc: bcc@example.com$/m.test(msg)).to.be.true;
                 done();
             });
         });

@@ -23,6 +23,7 @@ module.exports = MimeNode;
  * @param {Object} [options.parentNode] immediate parent for this node
  * @param {Object} [options.filename] filename for an attachment node
  * @param {String} [options.baseBoundary] shared part of the unique multipart boundary
+ * @param {Boolean} [options.keepBcc] If true, do not exclude Bcc from the generated headers
  */
 function MimeNode(contentType, options) {
     this.nodeCounter = 0;
@@ -43,6 +44,11 @@ function MimeNode(contentType, options) {
      * Root node for current mime tree
      */
     this.rootNode = options.rootNode || this;
+
+    /**
+     * If true include Bcc in generated headers (if available)
+     */
+    this.keepBcc = !!options.keepBcc;
 
     /**
      * If filename is specified but contentType is not (probably an attachment)
@@ -451,8 +457,11 @@ MimeNode.prototype.buildHeaders = function() {
                 value = libmime.buildHeaderValue(structured);
                 break;
             case 'Bcc':
-                // skip BCC values
-                return;
+                if (!_self.keepBcc) {
+                    // skip BCC values
+                    return;
+                }
+                break;
         }
 
         // skip empty lines

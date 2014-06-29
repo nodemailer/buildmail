@@ -30,6 +30,7 @@ Where
   * **options** - an optional options object
     * **filename** - *String* filename for an attachment node
     * **baseBoundary** - *String* shared part of the unique multipart boundary (generated randomly if not set)
+    * **keepBcc** - *Boolean* If true keep the Bcc value in generated headers (default is to remove it)
 
 ## Methods
 
