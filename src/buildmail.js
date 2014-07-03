@@ -103,6 +103,13 @@ function MimeNode(contentType, options) {
     this._envelope = false;
 
     /**
+     * Additional transform streams that the message will be piped before
+     * exposing by createReadStream
+     * @type {Array}
+     */
+    this._transforms = [];
+
+    /**
      * If content type is set (or derived from the filename) add it to headers
      */
     if (contentType) {
@@ -497,7 +504,21 @@ MimeNode.prototype.createReadStream = function(options) {
         outputStream.end();
     });
 
+    for (var i = 0, len = this._transforms.length; i < len; i++) {
+        outputStream = outputStream.pipe(this._transforms[i]);
+    }
+
     return outputStream;
+};
+
+/**
+ * Appends a transform stream object to the transforms list. Final output
+ * is passed through this stream before exposing
+ *
+ * @param {Object} transform Read-Write stream
+ */
+MimeNode.prototype.use = function(transform) {
+    this._transforms.push(transform);
 };
 
 MimeNode.prototype.stream = function(outputStream, options, callback) {

@@ -330,6 +330,7 @@ MIME-Version: 1.0
 
 Hello world!
 ```
+
 ## createReadStream
 
 If you manage large attachments you probably do not want to generate but stream the message.
@@ -352,6 +353,33 @@ message.addHeader({
     cc: 'receiver2@example.com'
 });
 message.setContent(fs.createReadStream('message.txt'));
+message.createReadStream().pipe(fs.createWriteStream('message.eml'));
+```
+
+## use
+
+If you want to modify the created stream, you can add transform streams that the output will be piped through.
+
+```javascript
+node.use(transformStream)
+```
+
+Where
+
+  * **transformStream** - *Stream* Transform streat that the output will go through before returing with `createReadStream`
+
+**Example**
+
+```javascript
+var PassThrough = require('stream').PassThrough;
+var message = new BuildMail();
+message.addHeader({
+    from: 'From <from@example.com>',
+    to: 'receiver1@example.com',
+    cc: 'receiver2@example.com'
+});
+message.setContent(fs.createReadStream('message.txt'));
+message.use(new PassThrough()); does't do anything wit the output, just passes it by
 message.createReadStream().pipe(fs.createWriteStream('message.eml'));
 ```
 

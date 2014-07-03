@@ -4,6 +4,8 @@ var chai = require('chai');
 var sinon = require('sinon');
 var Buildmail = require('../src/buildmail');
 var http = require('http');
+var stream = require('stream');
+var Transform = stream.Transform;
 
 var expect = chai.expect;
 chai.Assertion.includeStack = true;
@@ -800,6 +802,48 @@ describe('Buildmail', function() {
             mb.build(function(err, msg) {
                 msg = msg.toString();
                 expect(/^=C3=A4/m.test(msg)).to.be.true;
+                done();
+            });
+        });
+    });
+
+    describe('#use', function() {
+        it('should pipe through provided stream', function(done) {
+            var mb = new Buildmail('text/plain').
+            setHeader({
+                date: '12345',
+                'message-id': '67890'
+            }).
+            setContent('Hello world!');
+
+            var expected = 'Content-Type:\ttext/plain\r\n' +
+                'Date:\t12345\r\n' +
+                'Message-Id:\t<67890>\r\n' +
+                'Content-Transfer-Encoding:\t7bit\r\n' +
+                'MIME-Version:\t1.0\r\n' +
+                '\r\n' +
+                'Hello\tworld!';
+
+            // Transform stream that replaces all spaces with tabs
+            var transform = new Transform();
+            transform._transform = function(chunk, encoding, done) {
+                if (encoding !== 'buffer') {
+                    chunk = new Buffer(chunk, encoding);
+                }
+                for (var i = 0, len = chunk.length; i < len; i++) {
+                    if (chunk[i] === 0x20) {
+                        chunk[i] = 0x09;
+                    }
+                }
+                this.push(chunk);
+                done();
+            };
+
+            mb.use(transform);
+
+            mb.build(function(err, msg) {
+                msg = msg.toString();
+                expect(msg).to.equal(expected);
                 done();
             });
         });
