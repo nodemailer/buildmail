@@ -517,7 +517,7 @@ MimeNode.prototype.createReadStream = function(options) {
  *
  * @param {Object} transform Read-Write stream
  */
-MimeNode.prototype.use = function(transform) {
+MimeNode.prototype.transform = function(transform) {
     this._transforms.push(transform);
 };
 

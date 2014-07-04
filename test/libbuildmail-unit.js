@@ -839,7 +839,7 @@ describe('Buildmail', function() {
                 done();
             };
 
-            mb.use(transform);
+            mb.transform(transform);
 
             mb.build(function(err, msg) {
                 msg = msg.toString();

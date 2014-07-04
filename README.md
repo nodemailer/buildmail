@@ -356,12 +356,12 @@ message.setContent(fs.createReadStream('message.txt'));
 message.createReadStream().pipe(fs.createWriteStream('message.eml'));
 ```
 
-## use
+## transform
 
 If you want to modify the created stream, you can add transform streams that the output will be piped through.
 
 ```javascript
-node.use(transformStream)
+node.transform(transformStream)
 ```
 
 Where
@@ -379,7 +379,7 @@ message.addHeader({
     cc: 'receiver2@example.com'
 });
 message.setContent(fs.createReadStream('message.txt'));
-message.use(new PassThrough()); does't do anything wit the output, just passes it by
+message.transform(new PassThrough()); // add a stream that the output will be piped through
 message.createReadStream().pipe(fs.createWriteStream('message.eml'));
 ```
 
