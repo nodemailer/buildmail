@@ -120,7 +120,7 @@ function MimeNode(contentType, options) {
 /////// PUBLIC METHODS
 
 /**
- * Creates and appends a child node. Arguments provided are passed to MimeNode constructor
+ * Creates and appends a child node.Arguments provided are passed to MimeNode constructor
  *
  * @param {String} [contentType] Optional content type
  * @param {Object} [options] Optional options object
@@ -554,6 +554,11 @@ MimeNode.prototype.stream = function(outputStream, options, callback) {
                 contentStream.once('end', finalize);
 
                 localStream = _self._getStream(_self.content);
+                // using `on` instead of `once` because hyperquest 0.3.0 seems to
+                // throw when `once('error')` is used and an error occurs
+                localStream.on('error', function(err) {
+                    contentStream.end('[' + err.message + ']');
+                });
                 localStream.pipe(contentStream);
                 return;
             } else {
@@ -566,6 +571,12 @@ MimeNode.prototype.stream = function(outputStream, options, callback) {
                     end: false
                 });
                 localStream.once('end', finalize);
+                // using `on` instead of `once` because hyperquest 0.3.0 seems to
+                // throw when `once('error')` is used and an error occurs
+                localStream.on('error', function(err) {
+                    localStream.write('[' + err.message + ']');
+                    finalize();
+                });
                 return;
             }
         } else {
@@ -653,6 +664,7 @@ MimeNode.prototype.getEnvelope = function() {
  */
 MimeNode.prototype._getStream = function(content) {
     var contentStream;
+
     if (typeof content.pipe === 'function') {
         return content;
     } else if (content && typeof content.path === 'string') {

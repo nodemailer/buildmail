@@ -805,9 +805,22 @@ describe('Buildmail', function() {
                 done();
             });
         });
+
+        it('#should not throw on error', function(done) {
+            var mb = new Buildmail('text/plain').
+            setContent({
+                href: 'http://__should_not_exist:88888'
+            });
+
+            mb.build(function(err, msg) {
+                msg = msg.toString();
+                expect(/ENOTFOUND/.test(msg)).to.be.true;
+                done();
+            });
+        });
     });
 
-    describe('#use', function() {
+    describe('#transform', function() {
         it('should pipe through provided stream', function(done) {
             var mb = new Buildmail('text/plain').
             setHeader({
