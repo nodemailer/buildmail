@@ -41,8 +41,8 @@ describe('Buildmail', function() {
             mb.appendChild(child);
             expect(child.parentNode).to.equal(mb);
             expect(child.rootNode).to.equal(mb);
-            expect(mb._childNodes.length).to.equal(1);
-            expect(mb._childNodes[0]).to.equal(child);
+            expect(mb.childNodes.length).to.equal(1);
+            expect(mb.childNodes[0]).to.equal(child);
         });
     });
 
@@ -54,8 +54,8 @@ describe('Buildmail', function() {
 
             child.replace(replacement);
 
-            expect(mb._childNodes.length).to.equal(1);
-            expect(mb._childNodes[0]).to.equal(replacement);
+            expect(mb.childNodes.length).to.equal(1);
+            expect(mb.childNodes[0]).to.equal(replacement);
         });
     });
 
@@ -65,7 +65,7 @@ describe('Buildmail', function() {
                 child = mb.createChild('text/plain');
 
             child.remove();
-            expect(mb._childNodes.length).to.equal(0);
+            expect(mb.childNodes.length).to.equal(0);
             expect(child.parenNode).to.not.exist;
         });
     });

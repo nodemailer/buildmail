@@ -70,14 +70,14 @@ function MimeNode(contentType, options) {
     this.parentNode = options.parentNode;
 
     /**
+     * An array for possible child nodes
+     */
+    this.childNodes = [];
+
+    /**
      * Used for generating unique boundaries (prepended to the shared base)
      */
     this._nodeId = ++this.rootNode.nodeCounter;
-
-    /**
-     * An array for possible child nodes
-     */
-    this._childNodes = [];
 
     /**
      * A list of header values for this node in the form of [{key:'', value:''}]
@@ -152,7 +152,7 @@ MimeNode.prototype.appendChild = function(childNode) {
 
     childNode.parentNode = this;
 
-    this._childNodes.push(childNode);
+    this.childNodes.push(childNode);
     return childNode;
 };
 
@@ -167,7 +167,7 @@ MimeNode.prototype.replace = function(node) {
         return this;
     }
 
-    this.parentNode._childNodes.forEach(function(childNode, i) {
+    this.parentNode.childNodes.forEach(function(childNode, i) {
         if (childNode === this) {
 
             node.rootNode = this.rootNode;
@@ -177,7 +177,7 @@ MimeNode.prototype.replace = function(node) {
             this.rootNode = this;
             this.parentNode = undefined;
 
-            node.parentNode._childNodes[i] = node;
+            node.parentNode.childNodes[i] = node;
         }
     }.bind(this));
 
@@ -194,9 +194,9 @@ MimeNode.prototype.remove = function() {
         return this;
     }
 
-    for (var i = this.parentNode._childNodes.length - 1; i >= 0; i--) {
-        if (this.parentNode._childNodes[i] === this) {
-            this.parentNode._childNodes.splice(i, 1);
+    for (var i = this.parentNode.childNodes.length - 1; i >= 0; i--) {
+        if (this.parentNode.childNodes[i] === this) {
+            this.parentNode.childNodes.splice(i, 1);
             this.parentNode = undefined;
             this.rootNode = this;
             return this;
@@ -589,11 +589,11 @@ MimeNode.prototype.stream = function(outputStream, options, callback) {
     function finalize() {
         var childId = 0;
         var processChildNode = function() {
-            if (childId >= _self._childNodes.length) {
+            if (childId >= _self.childNodes.length) {
                 outputStream.write('\r\n--' + _self.boundary + '--\r\n');
                 return callback();
             }
-            var child = _self._childNodes[childId++];
+            var child = _self.childNodes[childId++];
             outputStream.write((childId > 1 ? '\r\n' : '') + '--' + _self.boundary + '\r\n');
             child.stream(outputStream, options, function() {
                 setImmediate(processChildNode);
