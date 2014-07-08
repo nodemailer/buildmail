@@ -1,6 +1,6 @@
 {
   "name": "buildmail",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "buildmail is a low level rfc2822 message composer. Define your own mime tree, no magic included.",
   "author": "Andris Reinman <andris@kreata.ee>",
   "keywords": [
@@ -18,10 +18,10 @@
   "main": "src/buildmail",
   "dependencies": {
     "addressparser": "^0.3.1",
-    "libmime": "^0.1.1",
+    "hyperquest": "^0.3.0",
     "libbase64": "^0.1.0",
-    "libqp": "^0.1.1",
-    "hyperquest": "^0.3.0"
+    "libmime": "^0.1.2",
+    "libqp": "^0.1.1"
   },
   "devDependencies": {
     "chai": "~1.8.1",
