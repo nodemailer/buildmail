@@ -344,7 +344,7 @@ MimeNode.prototype.setContent = function(content) {
         this.content.once('error', this._contentErrorHandler);
     } else if (typeof this.content === 'string') {
         this._isPlainText = libmime.isPlainText(this.content);
-        if (this._isPlainText && libmime.hasLongerLines(this.content)) {
+        if (this._isPlainText && libmime.hasLongerLines(this.content, 76)) {
             // If there are lines longer than 76 symbols/bytes, use 'format=flowed' for text nodes
             this._isFlowedContent = true;
         }
