@@ -426,6 +426,54 @@ Returns the following object:
 }
 ```
 
+## getAddresses
+
+Returns an address container object. Includes all parsed addresses from From, Sender, To, Cc, Bcc and Reply-To fields.
+
+While `getEnvelope()` returns 'from' value as a single address (the first one encountered) then `getAddresses` return all values as arrays, including `from`. Additionally while `getEnvelope` returns only `from` and a combined `to` value then `getAddresses` returns all fields separately.
+
+Possbile return values (all arrays in the form of `[{name:'', address:''}]`):
+
+  * **from**
+  * **sender**
+  * **'reply-to'**
+  * **to**
+  * **cc**
+  * **bcc**
+
+If no addresses were found for a particular field, the field is not set in the response object.
+
+**Example**
+
+```javascript
+new BuildMail().
+    addHeader({
+        from: 'From <from@example.com>',
+        to: '"Receiver" receiver1@example.com',
+        cc: 'receiver2@example.com'
+    }).
+    getAddresses();
+```
+
+Returns the following object:
+
+```javascript
+{
+    from: [{
+        name: 'From',
+        address: 'from@example.com'
+    }],
+    to: [{
+        name: 'Receiver',
+        address: 'receiver1@example.com'
+    }],
+    cc: [{
+        name: '',
+        address: 'receiver2@example.com'
+    }]
+}
+```
+
 ## Notes
 
 ### Addresses

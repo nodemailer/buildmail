@@ -592,6 +592,82 @@ describe('Buildmail', function() {
         });
     });
 
+    describe('#getAddresses', function() {
+        it('should get address object', function() {
+            expect(new Buildmail().addHeader({
+                from: 'From <from@example.com>',
+                sender: 'Sender <sender@example.com>',
+                to: 'receiver1@example.com'
+            }).addHeader({
+                to: 'receiver2@example.com',
+                cc: 'receiver1@example.com, receiver3@example.com',
+                bcc: 'receiver4@example.com, Rec5 <receiver5@example.com>'
+            }).getAddresses()).to.deep.equal({
+                from: [{
+                    address: 'from@example.com',
+                    name: 'From'
+                }],
+                sender: [{
+                    address: 'sender@example.com',
+                    name: 'Sender'
+                }],
+                to: [{
+                    address: 'receiver1@example.com',
+                    name: ''
+                }, {
+                    address: 'receiver2@example.com',
+                    name: ''
+                }],
+                cc: [{
+                    address: 'receiver1@example.com',
+                    name: ''
+                }, {
+                    address: 'receiver3@example.com',
+                    name: ''
+                }],
+                bcc: [{
+                    address: 'receiver4@example.com',
+                    name: ''
+                }, {
+                    address: 'receiver5@example.com',
+                    name: 'Rec5'
+                }]
+            });
+
+            expect(new Buildmail().addHeader({
+                sender: 'Sender <sender@example.com>',
+                to: 'receiver1@example.com'
+            }).addHeader({
+                to: 'receiver2@example.com',
+                cc: 'receiver1@example.com, receiver1@example.com',
+                bcc: 'receiver4@example.com, Rec5 <receiver5@example.com>'
+            }).getAddresses()).to.deep.equal({
+                sender: [{
+                    address: 'sender@example.com',
+                    name: 'Sender'
+                }],
+                to: [{
+                    address: 'receiver1@example.com',
+                    name: ''
+                }, {
+                    address: 'receiver2@example.com',
+                    name: ''
+                }],
+                cc: [{
+                    address: 'receiver1@example.com',
+                    name: ''
+                }],
+                bcc: [{
+                    address: 'receiver4@example.com',
+                    name: ''
+                }, {
+                    address: 'receiver5@example.com',
+                    name: 'Rec5'
+                }]
+            });
+        });
+    });
+
     describe('#_parseAddresses', function() {
         it('should normalize header key', function() {
             var mb = new Buildmail();

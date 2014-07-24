@@ -626,6 +626,28 @@ MimeNode.prototype.setEnvelope = function(envelope) {
 };
 
 /**
+ * Generates and returns an object with parsed address fields
+ *
+ * @return {Object} Address object
+ */
+MimeNode.prototype.getAddresses = function() {
+    var addresses = {};
+
+    this._headers.forEach(function(header) {
+        var key = header.key.toLowerCase();
+        if (['from', 'sender', 'reply-to', 'to', 'cc', 'bcc'].indexOf(key) >= 0) {
+            if (!Array.isArray(addresses[key])) {
+                addresses[key] = [];
+            }
+
+            this._convertAddresses(this._parseAddresses(header.value), addresses[key]);
+        }
+    }.bind(this));
+
+    return addresses;
+};
+
+/**
  * Generates and returns SMTP envelope with the sender address and a list of recipients addresses
  *
  * @return {Object} SMTP envelope in the form of {from: 'from@example.com', to: ['to@example.com']}
@@ -644,12 +666,16 @@ MimeNode.prototype.getEnvelope = function() {
         if (header.key === 'From' || (!envelope.from && ['Reply-To', 'Sender'].indexOf(header.key) >= 0)) {
             this._convertAddresses(this._parseAddresses(header.value), list);
             if (list.length && list[0]) {
-                envelope.from = list[0];
+                envelope.from = list[0].address;
             }
         } else if (['To', 'Cc', 'Bcc'].indexOf(header.key) >= 0) {
             this._convertAddresses(this._parseAddresses(header.value), envelope.to);
         }
     }.bind(this));
+
+    envelope.to = envelope.to.map(function(to) {
+        return to.address;
+    });
 
     return envelope;
 };
@@ -667,7 +693,7 @@ MimeNode.prototype._getStream = function(content) {
 
     if (typeof content.pipe === 'function') {
         return content;
-    } else if (content && typeof content.path === 'string') {
+    } else if (content && typeof content.path === 'string' && !content.href) {
         return fs.createReadStream(content.path);
     } else if (content && typeof content.href === 'string') {
         return hyperquest(content.href);
@@ -841,8 +867,12 @@ MimeNode.prototype._convertAddresses = function(addresses, uniqueList) {
                 values.push(this._encodeAddressName(address.name) + ' <' + address.address + '>');
             }
 
-            if (uniqueList.indexOf(address.address) < 0) {
-                uniqueList.push(address.address);
+            if (address.address) {
+                if (!uniqueList.filter(function(a) {
+                    return a.address === address.address;
+                }).length) {
+                    uniqueList.push(address);
+                }
             }
         } else if (address.group) {
             values.push(this._encodeAddressName(address.name) + ':' + (address.group.length ? this._convertAddresses(address.group, uniqueList) : '').trim() + ';');
