@@ -421,6 +421,21 @@ describe('Buildmail', function() {
             });
         });
 
+        it('should encode filename with a space', function(done) {
+            var mb = new Buildmail('text/plain', {
+                filename: 'document a.test.pdf'
+            }).
+            setContent('jõgeva');
+
+            mb.build(function(err, msg) {
+                msg = msg.toString();
+                expect(/^Content-Type: text\/plain; charset=utf-8$/m.test(msg)).to.be.true;
+                expect(/^Content-Transfer-Encoding: quoted-printable$/m.test(msg)).to.be.true;
+                expect(/^Content-Disposition: attachment; filename="document a.test.pdf"$/m.test(msg)).to.be.true;
+                done();
+            });
+        });
+
         it('should detect content type from filename', function(done) {
             var mb = new Buildmail(false, {
                 filename: 'jogeva.zip'

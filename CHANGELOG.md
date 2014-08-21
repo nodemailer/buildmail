@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.1.1 2014-08-21
+
+  * Bumped libmime version to handle filenames with spaces properly. Short ascii only names with spaces were left unquoted.
+
 ## v1.1.0 2014-07-24
 
   * Added new method `getAddresses` that returns all used addresses as a structured object
