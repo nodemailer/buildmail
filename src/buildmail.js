@@ -505,7 +505,7 @@ MimeNode.prototype.createReadStream = function(options) {
     });
 
     for (var i = 0, len = this._transforms.length; i < len; i++) {
-        outputStream = outputStream.pipe(this._transforms[i]);
+        outputStream = outputStream.pipe(typeof this._transforms[i] === 'function' ? this._transforms[i]() : this._transforms[i]);
     }
 
     return outputStream;

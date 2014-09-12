@@ -416,7 +416,7 @@ describe('Buildmail', function() {
                 msg = msg.toString();
                 expect(/^Content-Type: text\/plain; charset=utf-8$/m.test(msg)).to.be.true;
                 expect(/^Content-Transfer-Encoding: quoted-printable$/m.test(msg)).to.be.true;
-                expect(/^Content-Disposition: attachment; filename\*0\*="utf-8''j%C3%B5geva.txt"$/m.test(msg)).to.be.true;
+                expect(/^Content-Disposition: attachment; filename\*0\*=utf-8''j%C3%B5geva.txt$/m.test(msg)).to.be.true;
                 done();
             });
         });
