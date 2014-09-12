@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.0 2014-09-12
+
+  * Allow functions as transform plugins (the function should create a stream object)
+
 ## v1.1.1 2014-08-21
 
   * Bumped libmime version to handle filenames with spaces properly. Short ascii only names with spaces were left unquoted.

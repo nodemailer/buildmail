@@ -366,7 +366,7 @@ node.transform(transformStream)
 
 Where
 
-  * **transformStream** - *Stream* Transform streat that the output will go through before returing with `createReadStream`
+  * **transformStream** - *Stream* or *Function* Transform stream that the output will go through before returing with `createReadStream`. If the value is a function the function should return a transform stream object when called.
 
 **Example**
 
