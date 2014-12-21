@@ -531,20 +531,6 @@ MimeNode.prototype.stream = function(outputStream, options, callback) {
     function sendContent() {
         if (_self.content) {
 
-            if (typeof _self.content.pipe === 'function') {
-                _self.content.removeListener('error', _self._contentErrorHandler);
-                _self._contentErrorHandler = function(err) {
-                    if (contentStream) {
-                        contentStream.write('<' + err.message + '>');
-                        contentStream.end();
-                    } else {
-                        outputStream.write('<' + err.message + '>');
-                        setImmediate(finalize);
-                    }
-                };
-                _self.content.once('error', _self._contentErrorHandler);
-            }
-
             if (['quoted-printable', 'base64'].indexOf(transferEncoding) >= 0) {
                 contentStream = new(transferEncoding === 'base64' ? libbase64 : libqp).Encoder(options);
 
