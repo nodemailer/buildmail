@@ -560,7 +560,7 @@ MimeNode.prototype.stream = function(outputStream, options, callback) {
                 // using `on` instead of `once` because hyperquest 0.3.0 seems to
                 // throw when `once('error')` is used and an error occurs
                 localStream.on('error', function(err) {
-                    localStream.write('[' + err.message + ']');
+                    outputStream.write('[' + err.message + ']');
                     finalize();
                 });
                 return;
