@@ -356,6 +356,11 @@ MimeNode.prototype.build = function(callback) {
     var stream = this.createReadStream();
     var buf = [];
     var buflen = 0;
+    var calledBack;
+    var callbackOnce = function () {
+        calledBack || callback.apply(this, arguments);
+        calledBack = true;
+    };
 
     stream.on('data', function(chunk) {
         if (chunk && chunk.length) {
@@ -364,12 +369,14 @@ MimeNode.prototype.build = function(callback) {
         }
     });
 
+    stream.once('error', callbackOnce);
+
     stream.once('end', function(chunk) {
         if (chunk && chunk.length) {
             buf.push(chunk);
             buflen += chunk.length;
         }
-        return callback(null, Buffer.concat(buf, buflen));
+        return callbackOnce(null, Buffer.concat(buf, buflen));
     });
 };
 

@@ -917,14 +917,14 @@ describe('Buildmail', function() {
             });
         });
 
-        it('#should not throw on error', function(done) {
+        it('should not throw on error', function(done) {
             var mb = new Buildmail('text/plain').
             setContent({
                 href: 'http://__should_not_exist:88888'
             });
 
-            mb.build(function(err, msg) {
-                msg = msg.toString();
+            mb.build(function(err) {
+                var msg = err.toString();
                 expect(/ENOTFOUND/.test(msg)).to.be.true;
                 done();
             });
