@@ -546,6 +546,7 @@ MimeNode.prototype.stream = function(outputStream, options, callback) {
             // throw when `once('error')` is used and an error occurs
             localStream.on('error', function(err) {
                 contentStream.end('[' + err.message + ']');
+                outputStream.emit('error', err);
             });
             localStream.pipe(contentStream);
         } else {
@@ -562,6 +563,7 @@ MimeNode.prototype.stream = function(outputStream, options, callback) {
             // throw when `once('error')` is used and an error occurs
             localStream.on('error', function(err) {
                 outputStream.write('[' + err.message + ']');
+                outputStream.emit('error', err);
                 finalize();
             });
         }
