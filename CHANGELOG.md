@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.1 2014-09-12
+
+  * Maintenace release, fixed a test and bumped dependency versions
+
 ## v1.2.0 2014-09-12
 
   * Allow functions as transform plugins (the function should create a stream object)

@@ -900,7 +900,7 @@ describe('Buildmail', function() {
         it('#should not throw on error', function(done) {
             var mb = new Buildmail('text/plain').
             setContent({
-                href: 'http://__should_not_exist:88888'
+                href: 'http://__should_not_exist:58888'
             });
 
             mb.build(function(err, msg) {
