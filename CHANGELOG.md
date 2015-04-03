@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.2 2015-04-03
+
+  * Maintenace release, bumped libqp which resolves an endless loop in case of a trailing &lt;CR&gt;
+
 ## v1.2.1 2014-09-12
 
   * Maintenace release, fixed a test and bumped dependency versions
