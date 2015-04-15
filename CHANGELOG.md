@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.4 2015-04-15
+
+  * Only use format=flowed with text/plain and not with other text/* stuff
+
 ## v1.2.3 2015-04-15
 
   * Maintenace release, bumped dependency versions

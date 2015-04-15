@@ -94,6 +94,7 @@ function MimeNode(contentType, options) {
      * True if the content is plain text but has longer lines than allowed
      * @type {Boolean}
      */
+    this._canUseFlowedContent = false;
     this._isFlowedContent = false;
 
     /**
@@ -346,7 +347,7 @@ MimeNode.prototype.setContent = function(content) {
         this._isPlainText = libmime.isPlainText(this.content);
         if (this._isPlainText && libmime.hasLongerLines(this.content, 76)) {
             // If there are lines longer than 76 symbols/bytes, use 'format=flowed' for text nodes
-            this._isFlowedContent = true;
+            this._canUseFlowedContent = true;
         }
     }
     return this;
@@ -456,8 +457,8 @@ MimeNode.prototype.buildHeaders = function() {
 
                 _self._handleContentType(structured);
 
-                if (structured.value.match(/^text\//) && typeof _self.content === 'string') {
-                    if (_self._isFlowedContent) {
+                if (structured.value.match(/^text\/plain\b/) && typeof _self.content === 'string') {
+                    if (_self._canUseFlowedContent) {
                         structured.params.format = 'flowed';
                     }
 
@@ -465,6 +466,7 @@ MimeNode.prototype.buildHeaders = function() {
                         structured.params.charset = 'utf-8';
                     }
                 }
+
                 _self._isFlowedContent = String(structured.params.format).toLowerCase().trim() === 'flowed';
 
                 value = libmime.buildHeaderValue(structured);
