@@ -9,6 +9,7 @@ var stream = require('stream');
 var PassThrough = stream.PassThrough;
 var fs = require('fs');
 var hyperquest = require('hyperquest');
+var uuid = require('uuid');
 
 module.exports = MimeNode;
 
@@ -357,6 +358,7 @@ MimeNode.prototype.build = function(callback) {
     var stream = this.createReadStream();
     var buf = [];
     var buflen = 0;
+    var failures = [];
 
     stream.on('data', function(chunk) {
         if (chunk && chunk.length) {
@@ -365,12 +367,16 @@ MimeNode.prototype.build = function(callback) {
         }
     });
 
+    stream.on('failure', function(err) {
+        failures.push(err);
+    });
+
     stream.once('end', function(chunk) {
         if (chunk && chunk.length) {
             buf.push(chunk);
             buflen += chunk.length;
         }
-        return callback(null, Buffer.concat(buf, buflen));
+        return callback(null, Buffer.concat(buf, buflen), failures);
     });
 };
 
@@ -422,13 +428,7 @@ MimeNode.prototype.buildHeaders = function() {
         // You really should define your own Message-Id field!
         if (!this.getHeader('Message-Id')) {
             this.setHeader('Message-Id', '<' +
-                // crux to generate random strings like this:
-                // "1401391905590-58aa8c32-d32a065c-c1a2aad2"
-                [0, 0, 0].reduce(function(prev) {
-                    return prev + '-' + Math.floor((1 + Math.random()) * 0x100000000).
-                    toString(16).
-                    substring(1);
-                }, Date.now()) +
+                uuid.v4() +
                 '@' +
                 // try to use the domain of the FROM address or fallback localhost
                 (this.getEnvelope().from || 'localhost').split('@').pop() +
@@ -536,6 +536,7 @@ MimeNode.prototype.stream = function(outputStream, options, callback) {
             if (typeof _self.content.pipe === 'function') {
                 _self.content.removeListener('error', _self._contentErrorHandler);
                 _self._contentErrorHandler = function(err) {
+                    outputStream.emit('failure', err);
                     if (contentStream) {
                         contentStream.write('<' + err.message + '>');
                         contentStream.end();
@@ -559,7 +560,8 @@ MimeNode.prototype.stream = function(outputStream, options, callback) {
                 // using `on` instead of `once` because hyperquest 0.3.0 seems to
                 // throw when `once('error')` is used and an error occurs
                 localStream.on('error', function(err) {
-                    contentStream.end('[' + err.message + ']');
+                    outputStream.emit('failure', err);
+                    contentStream.end('<' + err.message + '>');
                 });
                 localStream.pipe(contentStream);
                 return;
@@ -576,7 +578,8 @@ MimeNode.prototype.stream = function(outputStream, options, callback) {
                 // using `on` instead of `once` because hyperquest 0.3.0 seems to
                 // throw when `once('error')` is used and an error occurs
                 localStream.on('error', function(err) {
-                    localStream.write('[' + err.message + ']');
+                    localStream.write('<' + err.message + '>');
+                    outputStream.emit('failure', err);
                     finalize();
                 });
                 return;
@@ -608,7 +611,6 @@ MimeNode.prototype.stream = function(outputStream, options, callback) {
             return callback();
         }
     }
-
 
     outputStream.write(this.buildHeaders() + '\r\n\r\n');
     setImmediate(sendContent);
@@ -733,7 +735,7 @@ MimeNode.prototype._normalizeHeaderKey = function(key) {
         // no newlines in keys
     replace(/\r?\n|\r/g, ' ').
     trim().toLowerCase().
-    // use uppercase words, except MIME
+        // use uppercase words, except MIME
     replace(/^MIME\b|^[a-z]|\-[a-z]/ig, function(c) {
         return c.toUpperCase();
     });
@@ -871,8 +873,8 @@ MimeNode.prototype._convertAddresses = function(addresses, uniqueList) {
 
             if (address.address) {
                 if (!uniqueList.filter(function(a) {
-                    return a.address === address.address;
-                }).length) {
+                        return a.address === address.address;
+                    }).length) {
                     uniqueList.push(address);
                 }
             }

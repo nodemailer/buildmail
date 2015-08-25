@@ -185,7 +185,7 @@ describe('Buildmail', function() {
             }).
             setContent('Hello world!'),
 
-            expected = 'Content-Type: text/plain\r\n' +
+                expected = 'Content-Type: text/plain\r\n' +
                 'Date: 12345\r\n' +
                 'Message-Id: <67890>\r\n' +
                 'Content-Transfer-Encoding: 7bit\r\n' +
@@ -205,7 +205,7 @@ describe('Buildmail', function() {
                 childNode = mb.createChild('text/plain').
             setContent('Hello world!'),
 
-            expected = 'Content-Type: text/plain\r\n' +
+                expected = 'Content-Type: text/plain\r\n' +
                 'Content-Transfer-Encoding: 7bit\r\n' +
                 '\r\n' +
                 'Hello world!';
@@ -222,11 +222,11 @@ describe('Buildmail', function() {
                 baseBoundary: 'test'
             }).
             setHeader({
-                date: '12345',
-                'message-id': '67890'
-            }),
+                    date: '12345',
+                    'message-id': '67890'
+                }),
 
-            expected = 'Content-Type: multipart/mixed; boundary="----sinikael-?=_1-test"\r\n' +
+                expected = 'Content-Type: multipart/mixed; boundary="----sinikael-?=_1-test"\r\n' +
                 'Date: 12345\r\n' +
                 'Message-Id: <67890>\r\n' +
                 'MIME-Version: 1.0\r\n' +
@@ -262,11 +262,11 @@ describe('Buildmail', function() {
         it('should not include bcc missing in output, but in envelope', function(done) {
             var mb = new Buildmail('text/plain').
             setHeader({
-                from: 'sender@example.com',
-                to: 'receiver@example.com',
-                bcc: 'bcc@example.com'
-            }),
-            envelope = mb.getEnvelope();
+                    from: 'sender@example.com',
+                    to: 'receiver@example.com',
+                    bcc: 'bcc@example.com'
+                }),
+                envelope = mb.getEnvelope();
 
             expect(envelope).to.deep.equal({
                 from: 'sender@example.com',
@@ -287,11 +287,11 @@ describe('Buildmail', function() {
                 keepBcc: true
             }).
             setHeader({
-                from: 'sender@example.com',
-                to: 'receiver@example.com',
-                bcc: 'bcc@example.com'
-            }),
-            envelope = mb.getEnvelope();
+                    from: 'sender@example.com',
+                    to: 'receiver@example.com',
+                    bcc: 'bcc@example.com'
+                }),
+                envelope = mb.getEnvelope();
 
             expect(envelope).to.deep.equal({
                 from: 'sender@example.com',
@@ -310,14 +310,14 @@ describe('Buildmail', function() {
         it('should use set envelope', function(done) {
             var mb = new Buildmail('text/plain').
             setHeader({
-                from: 'sender@example.com',
-                to: 'receiver@example.com',
-                bcc: 'bcc@example.com'
-            }).setEnvelope({
-                from: 'a',
-                to: 'b'
-            }),
-            envelope = mb.getEnvelope();
+                    from: 'sender@example.com',
+                    to: 'receiver@example.com',
+                    bcc: 'bcc@example.com'
+                }).setEnvelope({
+                    from: 'a',
+                    to: 'b'
+                }),
+                envelope = mb.getEnvelope();
 
             expect(envelope).to.deep.equal({
                 from: 'a',
@@ -489,7 +489,7 @@ describe('Buildmail', function() {
             }).
             setContent('Hello world!'),
 
-            expected = 'Content-Type: text/plain\r\n' +
+                expected = 'Content-Type: text/plain\r\n' +
                 'A: b\r\n' +
                 'Date: zzz\r\n' +
                 'Message-Id: <67890>\r\n' +
@@ -513,7 +513,7 @@ describe('Buildmail', function() {
             }).
             setContent('Hello world!'),
 
-            expected = 'Content-Type: application/x-my-stuff\r\n' +
+                expected = 'Content-Type: application/x-my-stuff\r\n' +
                 'Date: 12345\r\n' +
                 'Message-Id: <67890>\r\n' +
                 'Content-Transfer-Encoding: base64\r\n' +
@@ -536,7 +536,7 @@ describe('Buildmail', function() {
             }).
             setContent('Hello world!'),
 
-            expected = 'Content-Type: multipart/global; boundary=abc\r\n' +
+                expected = 'Content-Type: multipart/global; boundary=abc\r\n' +
                 'Date: 12345\r\n' +
                 'Message-Id: <67890>\r\n' +
                 'MIME-Version: 1.0\r\n' +
@@ -562,7 +562,8 @@ describe('Buildmail', function() {
 
             mb.build(function(err, msg) {
                 msg = msg.toString();
-                expect(/^Message-Id: <\d+(\-[a-f0-9]{8}){3}@example\.com>$/m.test(msg)).to.be.true;
+                console.log(msg);
+                expect(/^Message-Id: <[\da-f]{8}\-[\da-f]{4}\-[\da-f]{4}\-[\da-f]{4}\-[\da-f]{12}@example\.com>$/mi.test(msg)).to.be.true;
                 done();
             });
         });
@@ -572,7 +573,7 @@ describe('Buildmail', function() {
 
             mb.build(function(err, msg) {
                 msg = msg.toString();
-                expect(/^Message-Id: <\d+(\-[a-f0-9]{8}){3}@localhost>$/m.test(msg)).to.be.true;
+                expect(/^Message-Id: <[\da-f]{8}\-[\da-f]{4}\-[\da-f]{4}\-[\da-f]{4}\-[\da-f]{12}@localhost>$/m.test(msg)).to.be.true;
                 done();
             });
         });
@@ -903,9 +904,11 @@ describe('Buildmail', function() {
                 href: 'http://__should_not_exist:58888'
             });
 
-            mb.build(function(err, msg) {
+            mb.build(function(err, msg, failures) {
                 msg = msg.toString();
                 expect(/ENOTFOUND/.test(msg)).to.be.true;
+                expect(failures.length).to.equal(1);
+                expect(failures[0].code).to.equal('ENOTFOUND');
                 done();
             });
         });

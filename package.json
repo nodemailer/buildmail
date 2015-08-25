@@ -21,7 +21,8 @@
     "hyperquest": "^1.2.0",
     "libbase64": "^0.1.0",
     "libmime": "^1.0.0",
-    "libqp": "^1.0.0"
+    "libqp": "^1.0.0",
+    "uuid": "^2.0.1"
   },
   "devDependencies": {
     "chai": "~2.2.0",

@@ -1,14 +1,14 @@
 # buildmail
-
 Low level rfc2822 message composer that streams output. Define your own mime tree, no magic included.
 
 Ported from [MailBuild](https://github.com/whiteout-io/mailbuild) of the [emailjs.org](http://emailjs.org/) project. This port uses similar API but is for Node only and streams the output.
 
 ## Usage
-
 Install with npm
 
-    npm install buildmail
+```
+npm install buildmail
+```
 
 Require in your scripts
 
@@ -17,7 +17,6 @@ var BuildMail = require('buildmail');
 ```
 
 ## API
-
 Create a new `BuildMail` object with
 
 ```javascript
@@ -25,19 +24,16 @@ var builder = new BuildMail(contentType [, options]);
 ```
 
 Where
-
-  * **contentType** - define the content type for created node. Can be left blank for attachments (content type derived from `filename` option if available)
-  * **options** - an optional options object
-    * **filename** - *String* filename for an attachment node
-    * **baseBoundary** - *String* shared part of the unique multipart boundary (generated randomly if not set)
-    * **keepBcc** - *Boolean* If true keep the Bcc value in generated headers (default is to remove it)
+- **contentType** - define the content type for created node. Can be left blank for attachments (content type derived from `filename` option if available)
+- **options** - an optional options object
+  - **filename** - _String_ filename for an attachment node
+  - **baseBoundary** - _String_ shared part of the unique multipart boundary (generated randomly if not set)
+  - **keepBcc** - _Boolean_ If true keep the Bcc value in generated headers (default is to remove it)
 
 ## Methods
-
 The same methods apply to the root node created with `new BuildMail()` and to any child nodes.
 
 ### createChild
-
 Creates and appends a child node to the node object
 
 ```javascript
@@ -63,7 +59,6 @@ multipart/mixed
 ```
 
 ### appendChild
-
 Appends an existing child node to the node object. Removes the node from an existing tree if needed.
 
 ```javascript
@@ -71,8 +66,7 @@ node.appendChild(childNode)
 ```
 
 Where
-
-  * **childNode** - child node to be appended
+- **childNode** - child node to be appended
 
 Method returns appended child node.
 
@@ -92,7 +86,6 @@ multipart/mixed
 ```
 
 ## replace
-
 Replaces current node with another node
 
 ```javascript
@@ -100,8 +93,7 @@ node.replace(replacementNode)
 ```
 
 Where
-
-  * **replacementNode** - node to replace the current node with
+- **replacementNode** - node to replace the current node with
 
 Method returns replacement node.
 
@@ -121,7 +113,6 @@ multipart/mixed
 ```
 
 ## remove
-
 Removes current node from the mime tree. Does not make a lot of sense for a root node.
 
 ```javascript
@@ -146,20 +137,17 @@ multipart/mixed
 ```
 
 ## setHeader
-
 Sets a header value. If the value for selected key exists, it is overwritten.
 
-You can set multiple values as well by using `[{key:'', value:''}]` or
-`{key: 'value'}` structures as the first argument.
+You can set multiple values as well by using `[{key:'', value:''}]` or `{key: 'value'}` structures as the first argument.
 
 ```javascript
 node.setHeader(key, value);
 ```
 
 Where
-
-  * **key** - *String|Array|Object* Header key or a list of key value pairs
-  * **value** - *String* Header value
+- **key** - _String|Array|Object_ Header key or a list of key value pairs
+- **value** - _String_ Header value
 
 Method returns current node.
 
@@ -185,21 +173,17 @@ Message-Id: <abcde>
 ```
 
 ## addHeader
+Adds a header value. If the value for selected key exists, the value is appended as a new field and old one is not touched.
 
-Adds a header value. If the value for selected key exists, the value is appended
-as a new field and old one is not touched.
-
-You can set multiple values as well by using `[{key:'', value:''}]` or
-`{key: 'value'}` structures as the first argument.
+You can set multiple values as well by using `[{key:'', value:''}]` or `{key: 'value'}` structures as the first argument.
 
 ```javascript
 node.addHeader(key, value);
 ```
 
 Where
-
-  * **key** - *String|Array|Object* Header key or a list of key value pairs
-  * **value** - *String* Header value
+- **key** - _String|Array|Object_ Header key or a list of key value pairs
+- **value** - _String_ Header value
 
 Method returns current node.
 
@@ -226,7 +210,6 @@ X-Spam: 3
 ```
 
 ## getHeader
-
 Retrieves the first mathcing value of a selected key
 
 ```javascript
@@ -234,8 +217,7 @@ node.getHeader(key)
 ```
 
 Where
-
-  * **key** - *String* Key to search for
+- **key** - _String_ Key to search for
 
 **Example**
 
@@ -244,7 +226,6 @@ new BuildMail('text/plain').getHeader('content-type'); // text/plain
 ```
 
 ## buildHeaders
-
 Builds the current header info into a header block that can be used in an e-mail
 
 ```javascript
@@ -277,22 +258,18 @@ MIME-Version: 1.0
 If the node is the root node, then `Date` and `Message-Id` values are generated automatically if missing
 
 ## setContent
-
-Sets body content for current node. If the value is a string and Content-Type is text/* then charset is set automatically.
-If the value is a Buffer or a Stream you need to specify the charset yourself.
+Sets body content for current node. If the value is a string and Content-Type is text/* then charset is set automatically. If the value is a Buffer or a Stream you need to specify the charset yourself.
 
 ```javascript
 node.setContent(body)
 ```
 
 Where
-
-  * **body** - *String|Buffer|Stream|Object* body content
+- **body** - _String|Buffer|Stream|Object_ body content
 
 If the value is an object, it should include one of the following properties
-
-  * **path** - path to a file that will be used as the content
-  * **href** - URL that will be used as the content
+- **path** - path to a file that will be used as the content
+- **href** - URL that will be used as the content
 
 **Example**
 
@@ -303,20 +280,23 @@ new BuildMail('text/plain; charset=utf-8').setContent(fs.createReadStream('messa
 ```
 
 ## build
-
 Builds the rfc2822 message from the current node. If this is a root node, mandatory header fields are set if missing (Date, Message-Id, MIME-Version)
 
 ```javascript
 node.build(callback)
 ```
 
-Callback returns the rfc2822 message as a Buffer
+Callback returns the rfc2822 message as a Buffer and occurred failures as an array of errors (if any)
 
 **Example**
 
 ```javascript
-new BuildMail('text/plain').setContent('Hello world!').build(function(err, mail){
+new BuildMail('text/plain').setContent('Hello world!').build(function(err, mail, failures){
     console.log(mail.toString('ascii'));
+    if(failures.length){
+        console.log('Errors occurred while processing message');
+        console.log(failures);
+    }
 });
 ```
 
@@ -332,7 +312,6 @@ Hello world!
 ```
 
 ## createReadStream
-
 If you manage large attachments you probably do not want to generate but stream the message.
 
 ```javascript
@@ -340,8 +319,7 @@ var stream = node.createReadStream(options)
 ```
 
 Where
-
-  * **options** - *Object* optional Stream options (ie. `highWaterMark`)
+- **options** - _Object_ optional Stream options (ie. `highWaterMark`)
 
 **Example**
 
@@ -356,8 +334,18 @@ message.setContent(fs.createReadStream('message.txt'));
 message.createReadStream().pipe(fs.createWriteStream('message.eml'));
 ```
 
-## transform
+### Error handling
+Errors are emitted as _'failure'_ events with the error object as an argument. Buildmail by design ignores errors but if you need confirmation that errors did or didn't happen then you could collect these with this event. The event is not named as 'error' to pass through native Stream error handling.
 
+```javascript
+var message = new BuildMail();
+var stream = message.createReadStream();
+stream.on('failure', function(err){
+    console.log('Stream failure: %s', err.message);
+});
+```
+
+## transform
 If you want to modify the created stream, you can add transform streams that the output will be piped through.
 
 ```javascript
@@ -365,8 +353,7 @@ node.transform(transformStream)
 ```
 
 Where
-
-  * **transformStream** - *Stream* or *Function* Transform stream that the output will go through before returing with `createReadStream`. If the value is a function the function should return a transform stream object when called.
+- **transformStream** - _Stream_ or _Function_ Transform stream that the output will go through before returing with `createReadStream`. If the value is a function the function should return a transform stream object when called.
 
 **Example**
 
@@ -384,7 +371,6 @@ message.createReadStream().pipe(fs.createWriteStream('message.eml'));
 ```
 
 ## setEnvelope
-
 Set envelope object to use. If one is not set, it is generated based ong the headers.
 
 ```javascript
@@ -392,11 +378,9 @@ node.setEnvelope(envelope)
 ```
 
 Where
-
-  * **envelope** is an envelope object in the form of `{from:'address', to: ['addresses']}`
+- **envelope** is an envelope object in the form of `{from:'address', to: ['addresses']}`
 
 ## getEnvelope
-
 Generates a SMTP envelope object. Makes sense only for root node.
 
 ```javascript
@@ -427,19 +411,17 @@ Returns the following object:
 ```
 
 ## getAddresses
-
 Returns an address container object. Includes all parsed addresses from From, Sender, To, Cc, Bcc and Reply-To fields.
 
 While `getEnvelope()` returns 'from' value as a single address (the first one encountered) then `getAddresses` return all values as arrays, including `from`. Additionally while `getEnvelope` returns only `from` and a combined `to` value then `getAddresses` returns all fields separately.
 
 Possbile return values (all arrays in the form of `[{name:'', address:''}]`):
-
-  * **from**
-  * **sender**
-  * **'reply-to'**
-  * **to**
-  * **cc**
-  * **bcc**
+- **from**
+- **sender**
+- **'reply-to'**
+- **to**
+- **cc**
+- **bcc**
 
 If no addresses were found for a particular field, the field is not set in the response object.
 
@@ -475,14 +457,10 @@ Returns the following object:
 ```
 
 ## Notes
-
 ### Addresses
-
-When setting address headers (`From`, `To`, `Cc`, `Bcc`) use of unicode is allowed. If needed
-the addresses are converted to punycode automatically.
+When setting address headers (`From`, `To`, `Cc`, `Bcc`) use of unicode is allowed. If needed the addresses are converted to punycode automatically.
 
 ### Attachments
-
 For attachments you should minimally set `filename` option and `Content-Disposition` header. If filename is specified, you can leave content type blank - if content type is not set, it is detected from the filename.
 
 ```javascript
@@ -494,12 +472,10 @@ new BuildMail('multipart/mixed').
 Obviously you might want to add `Content-Id` header as well if you want to reference this attachment from the HTML content.
 
 ### MIME structure
-
 Most probably you only need to deal with the following multipart types when generating messages:
-
-  * **multipart/alternative** - includes the same content in different forms (usually text/plain + text/html)
-  * **multipart/related** - includes main node and related nodes (eg. text/html + referenced attachments). Also requires a `type` parameter that indicates the Content-Type of the *root* element in the node
-  * **multipart/mixed** - includes other multipart nodes and attachments, or single content node and attachments
+- **multipart/alternative** - includes the same content in different forms (usually text/plain + text/html)
+- **multipart/related** - includes main node and related nodes (eg. text/html + referenced attachments). Also requires a `type` parameter that indicates the Content-Type of the _root_ element in the node
+- **multipart/mixed** - includes other multipart nodes and attachments, or single content node and attachments
 
 **Examples**
 
@@ -550,5 +526,4 @@ multipart/mixed
 ```
 
 ## License
-
 **MIT**
