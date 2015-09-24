@@ -8,7 +8,7 @@ var stream = require('stream');
 var Transform = stream.Transform;
 
 var expect = chai.expect;
-chai.Assertion.includeStack = true;
+chai.config.includeStack = true;
 
 describe('Buildmail', function() {
     it('should create Buildmail object', function() {
@@ -386,6 +386,60 @@ describe('Buildmail', function() {
                 msg = msg.join('\r\n\r\n');
 
                 expect(msg).to.equal('tere\r\n From\r\n  Hello\r\n > abc\r\nabc');
+                done();
+            });
+        });
+
+        it('should flow text', function(done) {
+            var mb = new Buildmail('text/plain').
+            setContent('a b c d e f g h i j k l m o p q r s t u w x y z 1 2 3 4 5 6 7 8 9 0 a b c d e f g h i j k l m o p q r s t u w x y z 1 2 3 4 5 6 7 8 9 0');
+
+            mb.build(function(err, msg) {
+                msg = msg.toString();
+                expect(/^Content-Type: text\/plain; format=flowed$/m.test(msg)).to.be.true;
+                expect(/^Content-Transfer-Encoding: 7bit$/m.test(msg)).to.be.true;
+
+                msg = msg.split('\r\n\r\n');
+                msg.shift();
+                msg = msg.join('\r\n\r\n');
+
+                expect(msg).to.equal('a b c d e f g h i j k l m o p q r s t u w x y z 1 2 3 4 5 6 7 8 9 0 a b c d \r\ne f g h i j k l m o p q r s t u w x y z 1 2 3 4 5 6 7 8 9 0');
+                done();
+            });
+        });
+
+        it('should not flow html', function(done) {
+            var mb = new Buildmail('text/html').
+            setContent('a b c d e f g h i j k l m o p q r s t u w x y z 1 2 3 4 5 6 7 8 9 0 a b c d e f g h i j k l m o p q r s t u w x y z 1 2 3 4 5 6 7 8 9 0');
+
+            mb.build(function(err, msg) {
+                msg = msg.toString();
+                expect(/^Content-Type: text\/html$/m.test(msg)).to.be.true;
+                expect(/^Content-Transfer-Encoding: quoted-printable$/m.test(msg)).to.be.true;
+
+                msg = msg.split('\r\n\r\n');
+                msg.shift();
+                msg = msg.join('\r\n\r\n');
+
+                expect(msg).to.equal('a b c d e f g h i j k l m o p q r s t u w x y z 1 2 3 4 5 6 7 8 9 0 a b c d=\r\n e f g h i j k l m o p q r s t u w x y z 1 2 3 4 5 6 7 8 9 =\r\n0');
+                done();
+            });
+        });
+
+        it('should use 7bit for html', function(done) {
+            var mb = new Buildmail('text/html').
+            setContent('a b c d e f g h i j k l m o p\r\nq r s t u w x y z 1 2 3 4 5 6\r\n7 8 9 0 a b c d e f g h i j k\r\nl m o p q r s t u w x y z\r\n1 2 3 4 5 6 7 8 9 0');
+
+            mb.build(function(err, msg) {
+                msg = msg.toString();
+                expect(/^Content-Type: text\/html$/m.test(msg)).to.be.true;
+                expect(/^Content-Transfer-Encoding: 7bit$/m.test(msg)).to.be.true;
+
+                msg = msg.split('\r\n\r\n');
+                msg.shift();
+                msg = msg.join('\r\n\r\n');
+
+                expect(msg).to.equal('a b c d e f g h i j k l m o p\r\nq r s t u w x y z 1 2 3 4 5 6\r\n7 8 9 0 a b c d e f g h i j k\r\nl m o p q r s t u w x y z\r\n1 2 3 4 5 6 7 8 9 0');
                 done();
             });
         });

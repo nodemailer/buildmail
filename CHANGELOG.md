@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.2.5 2015-09-24
+
+  * Fixed a bug where ascii html content was not properly handled
+  * Updated buildmail for stricter quoted printable encoding
+
 ## v1.2.4 2015-04-15
 
   * Only use format=flowed with text/plain and not with other text/* stuff

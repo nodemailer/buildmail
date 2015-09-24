@@ -383,7 +383,7 @@ MimeNode.prototype.getTransferEncoding = function() {
         if (!transferEncoding || ['base64', 'quoted-printable'].indexOf(transferEncoding) < 0) {
             if (/^text\//i.test(contentType)) {
                 // If there are no special symbols, no need to modify the text
-                if (this._isPlainText) {
+                if (this._isPlainText && (/^text\/plain/i.test(contentType) || !this._canUseFlowedContent)) {
                     transferEncoding = '7bit';
                 } else {
                     transferEncoding = 'quoted-printable';
@@ -733,7 +733,7 @@ MimeNode.prototype._normalizeHeaderKey = function(key) {
         // no newlines in keys
     replace(/\r?\n|\r/g, ' ').
     trim().toLowerCase().
-    // use uppercase words, except MIME
+        // use uppercase words, except MIME
     replace(/^MIME\b|^[a-z]|\-[a-z]/ig, function(c) {
         return c.toUpperCase();
     });
@@ -871,8 +871,8 @@ MimeNode.prototype._convertAddresses = function(addresses, uniqueList) {
 
             if (address.address) {
                 if (!uniqueList.filter(function(a) {
-                    return a.address === address.address;
-                }).length) {
+                        return a.address === address.address;
+                    }).length) {
                     uniqueList.push(address);
                 }
             }
