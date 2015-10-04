@@ -357,6 +357,11 @@ MimeNode.prototype.build = function(callback) {
     var stream = this.createReadStream();
     var buf = [];
     var buflen = 0;
+    var calledBack;
+    var callbackOnce = function () {
+        calledBack || callback.apply(this, arguments);
+        calledBack = true;
+    };
 
     stream.on('data', function(chunk) {
         if (chunk && chunk.length) {
@@ -365,12 +370,14 @@ MimeNode.prototype.build = function(callback) {
         }
     });
 
+    stream.once('error', callbackOnce);
+
     stream.once('end', function(chunk) {
         if (chunk && chunk.length) {
             buf.push(chunk);
             buflen += chunk.length;
         }
-        return callback(null, Buffer.concat(buf, buflen));
+        return callbackOnce(null, Buffer.concat(buf, buflen));
     });
 };
 
@@ -531,58 +538,43 @@ MimeNode.prototype.stream = function(outputStream, options, callback) {
 
     // pushes node content
     function sendContent() {
-        if (_self.content) {
-
-            if (typeof _self.content.pipe === 'function') {
-                _self.content.removeListener('error', _self._contentErrorHandler);
-                _self._contentErrorHandler = function(err) {
-                    if (contentStream) {
-                        contentStream.write('<' + err.message + '>');
-                        contentStream.end();
-                    } else {
-                        outputStream.write('<' + err.message + '>');
-                        setImmediate(finalize);
-                    }
-                };
-                _self.content.once('error', _self._contentErrorHandler);
-            }
-
-            if (['quoted-printable', 'base64'].indexOf(transferEncoding) >= 0) {
-                contentStream = new(transferEncoding === 'base64' ? libbase64 : libqp).Encoder(options);
-
-                contentStream.pipe(outputStream, {
-                    end: false
-                });
-                contentStream.once('end', finalize);
-
-                localStream = _self._getStream(_self.content);
-                // using `on` instead of `once` because hyperquest 0.3.0 seems to
-                // throw when `once('error')` is used and an error occurs
-                localStream.on('error', function(err) {
-                    contentStream.end('[' + err.message + ']');
-                });
-                localStream.pipe(contentStream);
-                return;
-            } else {
-                if (_self._isFlowedContent) {
-                    localStream = _self._getStream(libmime.encodeFlowed(_self.content));
-                } else {
-                    localStream = _self._getStream(_self.content);
-                }
-                localStream.pipe(outputStream, {
-                    end: false
-                });
-                localStream.once('end', finalize);
-                // using `on` instead of `once` because hyperquest 0.3.0 seems to
-                // throw when `once('error')` is used and an error occurs
-                localStream.on('error', function(err) {
-                    localStream.write('[' + err.message + ']');
-                    finalize();
-                });
-                return;
-            }
-        } else {
+        if (!_self.content) {
             return setImmediate(finalize);
+        }
+
+        if (['quoted-printable', 'base64'].indexOf(transferEncoding) >= 0) {
+            contentStream = new(transferEncoding === 'base64' ? libbase64 : libqp).Encoder(options);
+
+            contentStream.pipe(outputStream, {
+                end: false
+            });
+            contentStream.once('end', finalize);
+
+            localStream = _self._getStream(_self.content);
+            // using `on` instead of `once` because hyperquest 0.3.0 seems to
+            // throw when `once('error')` is used and an error occurs
+            localStream.on('error', function(err) {
+                contentStream.end('[' + err.message + ']');
+                outputStream.emit('error', err);
+            });
+            localStream.pipe(contentStream);
+        } else {
+            if (_self._isFlowedContent) {
+                localStream = _self._getStream(libmime.encodeFlowed(_self.content));
+            } else {
+                localStream = _self._getStream(_self.content);
+            }
+            localStream.pipe(outputStream, {
+                end: false
+            });
+            localStream.once('end', finalize);
+            // using `on` instead of `once` because hyperquest 0.3.0 seems to
+            // throw when `once('error')` is used and an error occurs
+            localStream.on('error', function(err) {
+                outputStream.write('[' + err.message + ']');
+                outputStream.emit('error', err);
+                finalize();
+            });
         }
     }
 

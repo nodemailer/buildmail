@@ -6,6 +6,7 @@ var Buildmail = require('../src/buildmail');
 var http = require('http');
 var stream = require('stream');
 var Transform = stream.Transform;
+var OneMessageStream = require('./one-message-stream');
 
 var expect = chai.expect;
 chai.config.includeStack = true;
@@ -171,6 +172,25 @@ describe('Buildmail', function() {
             var mb = new Buildmail();
             mb.setContent('abc');
             expect(mb.content).to.equal('abc');
+        });
+
+        it('should proxy error events triggered by the underlying stream', function (done) {
+            var streamError = new Error('stream error');
+            var inputStream = new OneMessageStream('some content', streamError);
+            var errorSpy = function(err){
+                expect(err).to.equal(streamError);
+                done();
+            };
+
+            var mb = new Buildmail('text/plain')
+            .setHeader({
+                date: '12345',
+                'message-id': '67890'
+            })
+            .setContent(inputStream);
+  
+            var outputStream = mb.createReadStream();
+            outputStream.on('error', errorSpy);
         });
     });
 
@@ -951,14 +971,14 @@ describe('Buildmail', function() {
             });
         });
 
-        it('#should not throw on error', function(done) {
+        it('should not throw on error', function(done) {
             var mb = new Buildmail('text/plain').
             setContent({
                 href: 'http://__should_not_exist:58888'
             });
 
-            mb.build(function(err, msg) {
-                msg = msg.toString();
+            mb.build(function(err) {
+                var msg = err.toString();
                 expect(/ENOTFOUND/.test(msg)).to.be.true;
                 done();
             });
