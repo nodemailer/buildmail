@@ -8,7 +8,7 @@ var addressparser = require('addressparser');
 var stream = require('stream');
 var PassThrough = stream.PassThrough;
 var fs = require('fs');
-var hyperquest = require('hyperquest');
+var needle = require('needle');
 
 module.exports = MimeNode;
 
@@ -569,10 +569,8 @@ MimeNode.prototype.stream = function(outputStream, options, callback) {
                 contentStream.once('end', finalize);
 
                 localStream = _self._getStream(_self.content);
-                // using `on` instead of `once` because hyperquest 0.3.0 seems to
-                // throw when `once('error')` is used and an error occurs
-                localStream.on('error', function(err) {
-                    contentStream.end('[' + err.message + ']');
+                localStream.once('error', function(err) {
+                    contentStream.end('<' + err.message + '>');
                 });
                 localStream.pipe(contentStream);
                 return;
@@ -586,10 +584,8 @@ MimeNode.prototype.stream = function(outputStream, options, callback) {
                     end: false
                 });
                 localStream.once('end', finalize);
-                // using `on` instead of `once` because hyperquest 0.3.0 seems to
-                // throw when `once('error')` is used and an error occurs
-                localStream.on('error', function(err) {
-                    localStream.write('[' + err.message + ']');
+                localStream.once('error', function(err) {
+                    localStream.write('<' + err.message + '>');
                     finalize();
                 });
                 return;
@@ -711,7 +707,20 @@ MimeNode.prototype._getStream = function(content) {
     } else if (content && typeof content.path === 'string' && !content.href) {
         return fs.createReadStream(content.path);
     } else if (content && typeof content.href === 'string') {
-        return hyperquest(content.href);
+        contentStream = new PassThrough();
+        needle.get(content.href, {
+            decode_response: false,
+            parse_response: false
+        }).on('end', function(err) {
+            if (err) {
+                contentStream.emit('error', err);
+            }
+            contentStream.emit('end');
+        }).pipe(contentStream, {
+            end: false
+        });
+
+        return contentStream;
     } else {
         contentStream = new PassThrough();
         contentStream.end(content || '');

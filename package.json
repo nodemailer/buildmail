@@ -18,10 +18,10 @@
   "main": "src/buildmail",
   "dependencies": {
     "addressparser": "^0.3.2",
-    "hyperquest": "^1.2.0",
     "libbase64": "^0.1.0",
     "libmime": "^1.2.0",
-    "libqp": "^1.1.0"
+    "libqp": "^1.1.0",
+    "needle": "^0.10.0"
   },
   "devDependencies": {
     "chai": "~3.3.0",
