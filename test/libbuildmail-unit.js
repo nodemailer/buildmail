@@ -354,7 +354,7 @@ describe('Buildmail', function() {
 
             mb.build(function(err, msg) {
                 msg = msg.toString();
-                expect(msg.match(/\bSubject: [^\r]*\r\n( [^\r]*\r\n)*/)[0]).to.equal('Subject: =?UTF-8?Q?=CB=86=C2=B8=C3=81=C3=8C=C3=93=C4=B1?=\r\n =?UTF-8?Q?=C3=8F=CB=87=C3=81=C3=9B^=C2=B8\\=C3=81?=\r\n =?UTF-8?Q?=C4=B1=CB=86=C3=8C=C3=81=C3=9B=C3=98^\\?=\r\n =?UTF-8?Q?=CB=9C=C3=9B=CB=9D=E2=84=A2=CB=87=C4=B1?=\r\n =?UTF-8?Q?=C3=93=C2=B8^\\=CB=9C=EF=AC=81^\\=C2=B7\\?=\r\n =?UTF-8?Q?=CB=9C=C3=98^=C2=A3=CB=9C#=EF=AC=81^\\?=\r\n =?UTF-8?Q?=C2=A3=EF=AC=81^\\=C2=A3=EF=AC=81^\\?=\r\n');
+                expect(msg.match(/\bSubject: [^\r]*\r\n( [^\r]*\r\n)*/)[0]).to.equal('Subject: =?UTF-8?Q?=CB=86=C2=B8=C3=81=C3=8C=C3=93=C4=B1?=\r\n =?UTF-8?Q?=C3=8F=CB=87=C3=81=C3=9B=5E=C2=B8=5C?=\r\n =?UTF-8?Q?=C3=81=C4=B1=CB=86=C3=8C=C3=81=C3=9B?=\r\n =?UTF-8?Q?=C3=98=5E=5C=CB=9C=C3=9B=CB=9D=E2=84=A2?=\r\n =?UTF-8?Q?=CB=87=C4=B1=C3=93=C2=B8=5E=5C=CB=9C?=\r\n =?UTF-8?Q?=EF=AC=81=5E=5C=C2=B7=5C=CB=9C=C3=98=5E?=\r\n =?UTF-8?Q?=C2=A3=CB=9C=23=EF=AC=81=5E=5C=C2=A3?=\r\n =?UTF-8?Q?=EF=AC=81=5E=5C=C2=A3=EF=AC=81=5E=5C?=\r\n');
                 done();
             });
         });
@@ -453,7 +453,7 @@ describe('Buildmail', function() {
             mb.build(function(err, msg) {
                 msg = msg.toString();
                 expect(/\r\n\r\njogeva$/.test(msg)).to.be.true;
-                expect(/^Content-Type: text\/plain$/m.test(msg)).to.be.true;
+                expect(/^Content-Type: text\/plain; name=jogeva.txt$/m.test(msg)).to.be.true;
                 expect(/^Content-Transfer-Encoding: 7bit$/m.test(msg)).to.be.true;
                 expect(/^Content-Disposition: attachment; filename=jogeva.txt$/m.test(msg)).to.be.true;
                 done();
@@ -468,7 +468,7 @@ describe('Buildmail', function() {
 
             mb.build(function(err, msg) {
                 msg = msg.toString();
-                expect(/^Content-Type: text\/plain; charset=utf-8$/m.test(msg)).to.be.true;
+                expect(/^Content-Type: text\/plain; charset=utf-8;/m.test(msg)).to.be.true;
                 expect(/^Content-Transfer-Encoding: quoted-printable$/m.test(msg)).to.be.true;
                 expect(/^Content-Disposition: attachment; filename\*0\*=utf-8''j%C3%B5geva.txt$/m.test(msg)).to.be.true;
                 done();
@@ -483,7 +483,7 @@ describe('Buildmail', function() {
 
             mb.build(function(err, msg) {
                 msg = msg.toString();
-                expect(/^Content-Type: text\/plain; charset=utf-8$/m.test(msg)).to.be.true;
+                expect(/^Content-Type: text\/plain; charset=utf-8;/m.test(msg)).to.be.true;
                 expect(/^Content-Transfer-Encoding: quoted-printable$/m.test(msg)).to.be.true;
                 expect(/^Content-Disposition: attachment; filename="document a.test.pdf"$/m.test(msg)).to.be.true;
                 done();
@@ -498,7 +498,7 @@ describe('Buildmail', function() {
 
             mb.build(function(err, msg) {
                 msg = msg.toString();
-                expect(/^Content-Type: application\/zip$/m.test(msg)).to.be.true;
+                expect(/^Content-Type: application\/zip;/m.test(msg)).to.be.true;
                 done();
             });
         });

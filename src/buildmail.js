@@ -442,7 +442,8 @@ MimeNode.prototype.buildHeaders = function() {
     this._headers.forEach(function(header) {
         var key = header.key,
             value = header.value,
-            structured;
+            structured,
+            param;
 
         switch (header.key) {
             case 'Content-Disposition':
@@ -470,6 +471,18 @@ MimeNode.prototype.buildHeaders = function() {
                 _self._isFlowedContent = String(structured.params.format).toLowerCase().trim() === 'flowed';
 
                 value = libmime.buildHeaderValue(structured);
+
+                if (_self.filename) {
+                    // add support for non-compliant clients like QQ webmail
+                    // we can't build the value with buildHeaderValue as the value is non standard and
+                    // would be converted to parameter continuation encoding that we do not want
+                    param = libmime.encodeWords(_self.filename, 'Q', 52);
+                    if (param !== _self.filename || /[\s"=;]/.test(param)) {
+                        // include value in quotes if needed
+                        param = '"' + param + '"';
+                    }
+                    value += '; name=' + param;
+                }
                 break;
             case 'Bcc':
                 if (!_self.keepBcc) {

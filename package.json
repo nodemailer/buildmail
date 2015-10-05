@@ -20,7 +20,7 @@
     "addressparser": "^0.3.2",
     "hyperquest": "^1.2.0",
     "libbase64": "^0.1.0",
-    "libmime": "^1.1.0",
+    "libmime": "^1.2.0",
     "libqp": "^1.1.0"
   },
   "devDependencies": {
@@ -29,6 +29,6 @@
     "grunt-contrib-jshint": "~0.11.3",
     "grunt-mocha-test": "~0.12.7",
     "mocha": "^2.3.3",
-    "sinon": "^1.17.0"
+    "sinon": "^1.17.1"
   }
 }
