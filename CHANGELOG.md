@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.3.0 2015-10-05
+
+  * Add non-standard name param to content-type header, otherwise non compliant clients like QQ do not understand file names
+  * Bumped libmime version to get emoji support in filenames
+
 ## v1.2.5 2015-09-24
 
   * Fixed a bug where ascii html content was not properly handled
