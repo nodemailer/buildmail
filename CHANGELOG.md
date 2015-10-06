@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.0 2015-10-06
+
+  * Replaced hyperquest with needle. Bumped major version as needle might behave a little bit different than hyperquest
+
 ## v1.3.0 2015-10-05
 
   * Add non-standard name param to content-type header, otherwise non compliant clients like QQ do not understand file names
