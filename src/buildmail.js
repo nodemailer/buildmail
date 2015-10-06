@@ -710,7 +710,9 @@ MimeNode.prototype._getStream = function(content) {
         contentStream = new PassThrough();
         needle.get(content.href, {
             decode_response: false,
-            parse_response: false
+            parse_response: false,
+            compressed: true,
+            follow_max: 5
         }).on('end', function(err) {
             if (err) {
                 contentStream.emit('error', err);
@@ -719,7 +721,6 @@ MimeNode.prototype._getStream = function(content) {
         }).pipe(contentStream, {
             end: false
         });
-
         return contentStream;
     } else {
         contentStream = new PassThrough();
