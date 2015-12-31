@@ -4,6 +4,9 @@ Low level rfc2822 message composer that streams output. Define your own mime tre
 
 Ported from [MailBuild](https://github.com/whiteout-io/mailbuild) of the [emailjs.org](http://emailjs.org/) project. This port uses similar API but is for Node only and streams the output.
 
+[![Build Status](https://secure.travis-ci.org/nodemailer/buildmail.svg)](http://travis-ci.org/nodemailer/buildmail)
+<a href="http://badge.fury.io/js/buildmail"><img src="https://badge.fury.io/js/buildmail.svg" alt="NPM version" height="18"></a>
+
 ## Usage
 
 Install with npm
