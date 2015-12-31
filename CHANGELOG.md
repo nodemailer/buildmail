@@ -1,5 +1,12 @@
 # Changelog
 
+## v3.0.0-beta.0 2015-12-31
+
+  * Do not silently swallow errors, instead emit an error event for the stream and stop further processing
+  * Replaced needle with nodemailer-fetch
+  * Replaced jshint with eslint
+  * Removed format=flowed support, uses 7bit for short lines and QP for long lines of plaintext ASCII
+
 ## v2.0.0 2015-10-06
 
   * Replaced hyperquest with needle. Bumped major version as needle might behave a little bit different than hyperquest
