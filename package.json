@@ -1,6 +1,6 @@
 {
   "name": "buildmail",
-  "version": "2.0.0",
+  "version": "3.0.0-beta.0",
   "description": "buildmail is a low level rfc2822 message composer. Define your own mime tree, no magic included.",
   "author": "Andris Reinman <andris@kreata.ee>",
   "keywords": [
@@ -15,20 +15,20 @@
     "type": "git",
     "url": "git://github.com/andris9/buildmail.git"
   },
-  "main": "src/buildmail",
+  "main": "lib/buildmail",
   "dependencies": {
     "addressparser": "^0.3.2",
     "libbase64": "^0.1.0",
     "libmime": "^1.2.0",
     "libqp": "^1.1.0",
-    "needle": "^0.10.0"
+    "nodemailer-fetch": "^1.0.0"
   },
   "devDependencies": {
-    "chai": "~3.3.0",
+    "chai": "~3.4.1",
     "grunt": "~0.4.5",
-    "grunt-contrib-jshint": "~0.11.3",
+    "grunt-eslint": "^17.3.1",
     "grunt-mocha-test": "~0.12.7",
-    "mocha": "^2.3.3",
-    "sinon": "^1.17.1"
+    "mocha": "^2.3.4",
+    "sinon": "^1.17.2"
   }
 }
