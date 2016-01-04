@@ -1,7 +1,8 @@
 # Changelog
 
-## v3.0.0-beta.0 2015-12-31
+## 3.0.0
 
+  * Locked dependency versions
   * Do not silently swallow errors, instead emit an error event for the stream and stop further processing
   * Replaced needle with nodemailer-fetch
   * Replaced jshint with eslint
