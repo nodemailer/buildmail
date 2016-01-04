@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.1
+
+  * Bumped nodemailer-shared version
+
 ## 3.0.0
 
   * Locked dependency versions
