@@ -117,7 +117,7 @@ describe('Buildmail', function () {
             mb.setHeader('key', ['value1', 'value2', 'value3']);
             expect(mb._headers).to.deep.equal([{
                 key: 'Key',
-                value: 'value3'
+                value: ['value1', 'value2', 'value3']
             }]);
         });
     });

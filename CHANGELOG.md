@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.2.0
+
+  * Reverted setHeader array value handling. Pass array as array for setHeader
+
 ## 3.1.0
 
   * Bumped nodemailer-shared and addressparser versions
