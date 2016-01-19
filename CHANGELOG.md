@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.1.0
+
+  * Bumped nodemailer-shared and addressparser versions
+  * Allow arrays for the `value` argument of `setHeader` (uses the last element in the array) and `addHeader` (adds all values as separate rows)
+  * Exposed `messageId` method that generates and returns Message-Id value
+
 ## 3.0.1
 
   * Bumped nodemailer-shared version

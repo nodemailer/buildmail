@@ -202,7 +202,7 @@ node.addHeader(key, value);
 Where
 
   * **key** - *String|Array|Object* Header key or a list of key value pairs
-  * **value** - *String* Header value
+  * **value** - *String* Header value or an array of strings to add the same key multiple times
 
 Method returns current node.
 
@@ -422,11 +422,37 @@ new BuildMail().
 
 Returns the following object:
 
-```json
+```javascript
 {
-    'from': 'from@example.com',
-    'to': ['receiver1@example.com', 'receiver2@example.com']
+    from: 'from@example.com',
+    to: ['receiver1@example.com', 'receiver2@example.com']
 }
+```
+
+## messageId
+
+Returns Message-Id value. If it does not exist then generates one.
+
+```javascript
+var messageId = node.messageId();
+```
+
+Method returns the Message-Id value `<unique-message-id@example.com`
+
+**Example**
+
+```javascript
+new BuildMail().
+    addHeader({
+        from: 'From <from@example.com>'
+    }).
+    messageId();
+```
+
+Returns the following value:
+
+```javascript
+"<1453237212620-0657660b-8df9255d-18bcdcb5@example.com>"
 ```
 
 ## getAddresses

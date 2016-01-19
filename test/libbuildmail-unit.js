@@ -110,6 +110,16 @@ describe('Buildmail', function () {
                 value: 'value5'
             }]);
         });
+
+        it('should set multiple headers with the same key', function () {
+            var mb = new Buildmail();
+
+            mb.setHeader('key', ['value1', 'value2', 'value3']);
+            expect(mb._headers).to.deep.equal([{
+                key: 'Key',
+                value: 'value3'
+            }]);
+        });
     });
 
     describe('#addHeader', function () {
@@ -150,6 +160,21 @@ describe('Buildmail', function () {
             }, {
                 key: 'Key2',
                 value: 'value5'
+            }]);
+        });
+
+        it('should set multiple headers with the same key', function () {
+            var mb = new Buildmail();
+            mb.addHeader('key', ['value1', 'value2', 'value3']);
+            expect(mb._headers).to.deep.equal([{
+                key: 'Key',
+                value: 'value1'
+            }, {
+                key: 'Key',
+                value: 'value2'
+            }, {
+                key: 'Key',
+                value: 'value3'
             }]);
         });
     });
@@ -667,6 +692,18 @@ describe('Buildmail', function () {
                 from: 'sender@example.com',
                 to: ['receiver1@example.com', 'receiver2@example.com', 'receiver3@example.com', 'receiver4@example.com', 'receiver5@example.com']
             });
+        });
+    });
+
+    describe('#messageId', function () {
+        it('should create and return message-Id', function () {
+            var mail = new Buildmail().addHeader({
+                from: 'From <from@example.com>'
+            });
+
+            var messageId = mail.messageId();
+            expect(/^<[\w\-]+@example\.com>$/.test(messageId)).to.be.true;
+            expect(messageId).to.equal(mail.messageId());
         });
     });
 
