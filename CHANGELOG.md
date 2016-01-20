@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.3.1
+
+  * Fixed an issue with handling `Date` and `References` header
+
 ## 3.3.0
 
   * Added `prepared` option for the value argument of setheader/addHeader methods

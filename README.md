@@ -247,9 +247,6 @@ new BuildMail('text/plain').
 // X-Long-Header: a really long header or value with non-ascii characters 👮
 ```
 
-
-
-
 ## getHeader
 
 Retrieves the first mathcing value of a selected key
