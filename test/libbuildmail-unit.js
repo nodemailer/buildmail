@@ -554,6 +554,7 @@ describe('Buildmail', function () {
             mb.build(function (err, msg) {
                 expect(err).to.not.exist;
                 msg = msg.toString();
+                console.log(msg);
                 expect(/^From: the safewithme testuser <safewithme.testuser@xn\-\-jgeva-dua.com>$/m.test(msg)).to.be.true;
                 expect(/^Cc: the safewithme testuser <safewithme.testuser@xn\-\-jgeva-dua.com>$/m.test(msg)).to.be.true;
                 done();
@@ -574,6 +575,55 @@ describe('Buildmail', function () {
 
                 expected = 'Content-Type: text/plain\r\n' +
                 'A: b\r\n' +
+                'Date: zzz\r\n' +
+                'Message-Id: <67890>\r\n' +
+                'Content-Transfer-Encoding: 7bit\r\n' +
+                'MIME-Version: 1.0\r\n' +
+                '\r\n' +
+                'Hello world!';
+
+            mb.build(function (err, msg) {
+                expect(err).to.not.exist;
+                msg = msg.toString();
+                expect(msg).to.equal(expected);
+                done();
+            });
+        });
+
+        it('should not process prepared headers', function (done) {
+            var mb = new Buildmail('text/plain').
+            setHeader({
+                unprepared: {
+                    value: new Array(100).join('a b')
+                },
+                prepared: {
+                    value: new Array(100).join('a b'),
+                    prepared: true
+                },
+                unicode: {
+                    value: 'õäöü',
+                    prepared: true
+                },
+                date: 'zzz',
+                'message-id': '67890'
+            }).
+            setContent('Hello world!'),
+
+                expected = 'Content-Type: text/plain\r\n' +
+
+                // long folded value
+                'Unprepared: a ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba\r\n' +
+                ' ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba\r\n' +
+                ' ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba\r\n' +
+                ' ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba\r\n' +
+                ' ba ba ba b\r\n' +
+
+                // long unfolded value
+                'Prepared: a ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba ba b\r\n' +
+
+                // non-ascii value
+                'Unicode: õäöü\r\n' +
+
                 'Date: zzz\r\n' +
                 'Message-Id: <67890>\r\n' +
                 'Content-Transfer-Encoding: 7bit\r\n' +

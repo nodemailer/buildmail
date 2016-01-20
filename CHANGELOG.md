@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.3.0
+
+  * Added `prepared` option for the value argument of setheader/addHeader methods
+
 ## 3.2.0
 
   * Reverted setHeader array value handling. Pass array as array for setHeader

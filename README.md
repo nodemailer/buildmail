@@ -228,6 +228,28 @@ X-Spam: 2
 X-Spam: 3
 ```
 
+## Prepared headers
+
+Normally all headers are encoded and folded to meet the requirement of having plain-ASCII messages with lines no longer than 78 bytes. Sometimes it is preferable to not modify header values and pass these as provided. This can be achieved with the `prepared` option:
+
+```javascript
+new BuildMail('text/plain').
+    addHeader('X-Long-Header', {
+        prepared: true,
+        value: 'a really long header or value with non-ascii characters 👮'
+    });
+
+// normal output:
+// X-Long-Header: a really long header or value with non-ascii characters
+//  =?UTF-8?Q?=F0=9F=91=AE?=
+
+// output with the prepared option:
+// X-Long-Header: a really long header or value with non-ascii characters 👮
+```
+
+
+
+
 ## getHeader
 
 Retrieves the first mathcing value of a selected key
