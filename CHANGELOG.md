@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.3.2
+
+  * Bumped nodemailer-fetch version
+
 ## 3.3.1
 
   * Fixed an issue with handling `Date` and `References` header
