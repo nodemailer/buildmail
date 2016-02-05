@@ -9,6 +9,7 @@ var Buildmail = require('../lib/buildmail');
 var http = require('http');
 var stream = require('stream');
 var Transform = stream.Transform;
+var PassThrough = stream.PassThrough;
 
 var expect = chai.expect;
 chai.config.includeStack = true;
@@ -554,7 +555,6 @@ describe('Buildmail', function () {
             mb.build(function (err, msg) {
                 expect(err).to.not.exist;
                 msg = msg.toString();
-                console.log(msg);
                 expect(/^From: the safewithme testuser <safewithme.testuser@xn\-\-jgeva-dua.com>$/m.test(msg)).to.be.true;
                 expect(/^Cc: the safewithme testuser <safewithme.testuser@xn\-\-jgeva-dua.com>$/m.test(msg)).to.be.true;
                 done();
@@ -1061,7 +1061,7 @@ describe('Buildmail', function () {
         });
 
         it('#should return a error for an errored stream', function (done) {
-            var s = new stream.PassThrough();
+            var s = new PassThrough();
             var mb = new Buildmail('text/plain').
             setContent(s);
 
@@ -1077,7 +1077,7 @@ describe('Buildmail', function () {
         });
 
         it('#should return a stream error', function (done) {
-            var s = new stream.PassThrough();
+            var s = new PassThrough();
             var mb = new Buildmail('text/plain').
             setContent(s);
 
@@ -1132,6 +1132,90 @@ describe('Buildmail', function () {
                 msg = msg.toString();
                 expect(msg).to.equal(expected);
                 done();
+            });
+        });
+    });
+
+    describe('Raw content', function () {
+        it('should return pregenerated content', function (done) {
+            var expected = new Array(100).join('Test\n');
+            var mb = new Buildmail('text/plain').setRaw(expected);
+
+            mb.build(function (err, msg) {
+                expect(err).to.not.exist;
+                msg = msg.toString();
+                expect(msg).to.equal(expected);
+                done();
+            });
+        });
+
+        it('should return pregenerated content for a child node', function (done) {
+            var expected = new Array(100).join('Test\n');
+            var mb = new Buildmail('multipart/mixed', {
+                baseBoundary: 'test'
+            }).setHeader({
+                date: '12345',
+                'message-id': '67890'
+            });
+            var child = mb.createChild();
+            child.setRaw(expected);
+
+            mb.build(function (err, msg) {
+                expect(err).to.not.exist;
+                msg = msg.toString();
+                expect(msg).to.equal('Content-Type: multipart/mixed; boundary="----sinikael-?=_1-test"\r\n' +
+                    'Date: 12345\r\n' +
+                    'Message-Id: <67890>\r\n' +
+                    'MIME-Version: 1.0\r\n' +
+                    '\r\n' +
+                    '------sinikael-?=_1-test\r\n' +
+                    expected +
+                    '\r\n' +
+                    '------sinikael-?=_1-test--\r\n');
+                done();
+            });
+        });
+
+        it('should return pregenerated content from a stream', function (done) {
+            var expected = new Array(100).join('Test\n');
+            var raw = new PassThrough();
+            var mb = new Buildmail('text/plain').setRaw(raw);
+
+            setImmediate(function () {
+                raw.end(expected);
+            });
+
+            mb.build(function (err, msg) {
+                expect(err).to.not.exist;
+                msg = msg.toString();
+                expect(msg).to.equal(expected);
+                done();
+            });
+        });
+
+        it('should catch error from a raw stream 1', function (done) {
+            var raw = new PassThrough();
+            var mb = new Buildmail('text/plain').setRaw(raw);
+
+            raw.emit('error', new Error('Stream error'));
+
+            mb.build(function (err) {
+                expect(err).to.exist;
+                done();
+            });
+        });
+
+        it('should catch error from a raw stream 2', function (done) {
+            var raw = new PassThrough();
+            var mb = new Buildmail('text/plain').setRaw(raw);
+
+            mb.build(function (err) {
+                expect(err).to.exist;
+                done();
+            });
+
+            setImmediate(function () {
+                raw.emit('error', new Error('Stream error'));
             });
         });
     });

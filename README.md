@@ -324,6 +324,37 @@ new BuildMail('text/plain').setContent('Hello world!');
 new BuildMail('text/plain; charset=utf-8').setContent(fs.createReadStream('message.txt'));
 ```
 
+## setRaw
+
+Sets pre-generated output value for current node. When building the final message
+then this value is returned instead of building a fresh rfc822 mime message from
+normal input.
+
+This also means that other methods (`getAddresses`, `getEnvelope` etc.) that use normal
+input do not return valid values as the raw message is not parsed. You must set
+envelope contents manually with `setEnvelope` and you probably should set the
+*Message-Id* header (even though it wouldn't break anything if you would not set it).
+
+```javascript
+node.setRaw(message)
+```
+
+Where
+
+  * **message** - *String|Buffer|Stream|Object* MIME message
+
+If the value is an object, it should include one of the following properties
+
+  * **path** - path to a file that will be used as the content
+  * **href** - URL that will be used as the content
+
+**Example**
+
+```javascript
+new BuildMail().setRaw(fs.createReadStream('message.eml'));
+```
+
+
 ## build
 
 Builds the rfc2822 message from the current node. If this is a root node, mandatory header fields are set if missing (Date, Message-Id, MIME-Version)

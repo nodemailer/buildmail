@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.4.0 2016-02-05
+
+  * Added new method `setRaw`
+  * Bumped nodemailer-fetch version
+
 ## 3.3.2
 
   * Bumped nodemailer-fetch version
