@@ -349,14 +349,15 @@ describe('Buildmail', function () {
                 to: 'receiver@example.com',
                 bcc: 'bcc@example.com'
             }).setEnvelope({
-                from: 'a',
-                to: 'b'
+                from: 'U Name, A Name <a@a.a>',
+                to: 'B Name <b@b.b>, c@c.c',
+                bcc: 'P P P, <u@u.u>'
             });
             var envelope = mb.getEnvelope();
 
             expect(envelope).to.deep.equal({
-                from: 'a',
-                to: ['b']
+                from: 'a@a.a',
+                to: ['b@b.b', 'c@c.c', 'u@u.u']
             });
 
             mb.build(function (err, msg) {

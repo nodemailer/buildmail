@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.4.1 2016-02-05
+
+  * Fixed `setEnvelope`. Parse proper `from` and `to` addresses from the input instead of storing the input unmodified
+
 ## 3.4.0 2016-02-05
 
   * Added new method `setRaw`
