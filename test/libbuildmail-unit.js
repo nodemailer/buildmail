@@ -384,6 +384,20 @@ describe('Buildmail', function () {
             });
         });
 
+        it('should have spaces preserved in subject', function (done) {
+            var mb = new Buildmail('text/plain').
+            setHeader({
+                subject: 'Бета-продакшн: платежка 2422750 от 2015-07-20'
+            });
+
+            mb.build(function (err, msg) {
+                expect(err).to.not.exist;
+                msg = msg.toString();
+                expect(/Subject: =\?UTF-8\?Q\?=D0=91=D0=B5=D1=82=D0=B0-=D0=BF=D1=80\?=\r\n =\?UTF-8\?Q\?=D0=BE=D0=B4=D0=B0=D0=BA=D1=88=D0=BD=3A_\?=\r\n =\?UTF-8\?Q\?=D0=BF=D0=BB=D0=B0=D1=82=D0=B5=D0=B6\?= =\?UTF-8\?Q\?=D0=BA=D0=B0\?=\r\n 2422750 =\?UTF-8\?Q\?=D0=BE=D1=82\?= 2015-07-20\r\n/m.test(msg)).to.be.true;
+                done();
+            });
+        });
+
         it('should have unicode subject with strange characters', function (done) {
             var mb = new Buildmail('text/plain').
             setHeader({
