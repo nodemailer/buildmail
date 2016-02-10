@@ -393,7 +393,7 @@ describe('Buildmail', function () {
             mb.build(function (err, msg) {
                 expect(err).to.not.exist;
                 msg = msg.toString();
-                expect(msg.match(/\bSubject: [^\r]*\r\n( [^\r]*\r\n)*/)[0]).to.equal('Subject: =?UTF-8?Q?=CB=86=C2=B8=C3=81=C3=8C=C3=93=C4=B1?=\r\n =?UTF-8?Q?=C3=8F=CB=87=C3=81=C3=9B=5E=C2=B8=5C?=\r\n =?UTF-8?Q?=C3=81=C4=B1=CB=86=C3=8C=C3=81=C3=9B?=\r\n =?UTF-8?Q?=C3=98=5E=5C=CB=9C=C3=9B=CB=9D=E2=84=A2?=\r\n =?UTF-8?Q?=CB=87=C4=B1=C3=93=C2=B8=5E=5C=CB=9C?=\r\n =?UTF-8?Q?=EF=AC=81=5E=5C=C2=B7=5C=CB=9C=C3=98=5E?=\r\n =?UTF-8?Q?=C2=A3=CB=9C=23=EF=AC=81=5E=5C=C2=A3?=\r\n =?UTF-8?Q?=EF=AC=81=5E=5C=C2=A3=EF=AC=81=5E=5C?=\r\n');
+                expect(msg.match(/\bSubject: [^\r]*\r\n( [^\r]*\r\n)*/)[0]).to.equal('Subject: =?UTF-8?B?y4bCuMOBw4zDk8Sxw4/Lh8OBw5tewrhcw4HEscuG?=\r\n =?UTF-8?B?w4zDgcObw5heXMucw5vLneKEosuHxLHDk8K4Xlw=?=\r\n =?UTF-8?B?y5zvrIFeXMK3XMucw5hewqPLnCPvrIFeXMKj76yB?=\r\n =?UTF-8?B?XlzCo++sgV5c?=\r\n');
                 done();
             });
         });
@@ -408,6 +408,74 @@ describe('Buildmail', function () {
                 expect(/\r\n\r\ntere tere$/.test(msg)).to.be.true;
                 expect(/^Content-Type: text\/plain$/m.test(msg)).to.be.true;
                 expect(/^Content-Transfer-Encoding: 7bit$/m.test(msg)).to.be.true;
+                done();
+            });
+        });
+
+        it('should prefer base64', function (done) {
+            var mb = new Buildmail('text/plain').
+            setHeader({
+                subject: 'õõõõ'
+            }).
+            setContent('õõõõõõõõ');
+
+            mb.build(function (err, msg) {
+                expect(err).to.not.exist;
+                msg = msg.toString();
+
+                expect(/^Content-Type: text\/plain; charset=utf-8$/m.test(msg)).to.be.true;
+                expect(/^Content-Transfer-Encoding: base64$/m.test(msg)).to.be.true;
+                expect(/^Subject: =\?UTF-8\?B\?w7XDtcO1w7U=\?=$/m.test(msg)).to.be.true;
+                msg = msg.split('\r\n\r\n');
+                msg.shift();
+                msg = msg.join('\r\n\r\n');
+
+                expect(msg).to.equal('w7XDtcO1w7XDtcO1w7XDtQ==');
+                done();
+            });
+        });
+
+        it('should force quoted-printable', function (done) {
+            var mb = new Buildmail('text/plain', {
+                textEncoding: 'quoted-printable'
+            }).setHeader({
+                subject: 'õõõõ'
+            }).
+            setContent('õõõõõõõõ');
+
+            mb.build(function (err, msg) {
+                expect(err).to.not.exist;
+                msg = msg.toString();
+
+                expect(/^Content-Type: text\/plain; charset=utf-8$/m.test(msg)).to.be.true;
+                expect(/^Content-Transfer-Encoding: quoted-printable$/m.test(msg)).to.be.true;
+                expect(/^Subject: =\?UTF-8\?Q\?=C3=B5=C3=B5=C3=B5=C3=B5\?=$/m.test(msg)).to.be.true;
+
+                msg = msg.split('\r\n\r\n');
+                msg.shift();
+                msg = msg.join('\r\n\r\n');
+
+                expect(msg).to.equal('=C3=B5=C3=B5=C3=B5=C3=B5=C3=B5=C3=B5=C3=B5=C3=B5');
+                done();
+            });
+        });
+
+        it('should prefer quoted-printable', function (done) {
+            var mb = new Buildmail('text/plain').
+            setContent('ooooooooõ');
+
+            mb.build(function (err, msg) {
+                expect(err).to.not.exist;
+                msg = msg.toString();
+
+                expect(/^Content-Type: text\/plain; charset=utf-8$/m.test(msg)).to.be.true;
+                expect(/^Content-Transfer-Encoding: quoted-printable$/m.test(msg)).to.be.true;
+
+                msg = msg.split('\r\n\r\n');
+                msg.shift();
+                msg = msg.join('\r\n\r\n');
+
+                expect(msg).to.equal('oooooooo=C3=B5');
                 done();
             });
         });

@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.5.0 2016-02-11
+
+  * Added new option `textEncoding` to set default encoding for text parts
+  * If `textEncoding` is not set then detect preferred encoding from the content value (if mostly ASCII then use Quoted-Printable, otherwise Base64)
+  * Do not encode unicode e-mail usernames
+
 ## 3.4.1 2016-02-05
 
   * Fixed `setEnvelope`. Parse proper `from` and `to` addresses from the input instead of storing the input unmodified
