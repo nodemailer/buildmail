@@ -571,6 +571,22 @@ describe('Buildmail', function () {
             });
         });
 
+        it('should set dashed filename', function (done) {
+            var mb = new Buildmail('text/plain', {
+                filename: 'Ɣ------Ɣ------Ɣ------Ɣ------Ɣ------Ɣ------Ɣ------.pdf'
+            }).
+            setContent('jõgeva');
+
+            mb.build(function (err, msg) {
+                expect(err).to.not.exist;
+                msg = msg.toString();
+                expect(msg.indexOf('Content-Disposition: attachment;\r\n' +
+                    ' filename*0*=utf-8\'\'%C6%94------%C6%94------%C6%94------%C6%94;\r\n' +
+                    ' filename*1*=------%C6%94------%C6%94------%C6%94------.pdf')).to.be.gte(0);
+                done();
+            });
+        });
+
         it('should encode filename with a space', function (done) {
             var mb = new Buildmail('text/plain', {
                 filename: 'document a.test.pdf'

@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.5.2 2016-02-29
+
+  * Fixes an issue with long filenames that include unicode and dashes
+
 ## 3.5.0 2016-02-11
 
   * Added new option `textEncoding` to set default encoding for text parts
