@@ -775,6 +775,29 @@ describe('Buildmail', function () {
             });
         });
 
+        it('should not set transfer encoding for message/ content', function (done) {
+            var mb = new Buildmail('message/rfc822').
+            setHeader({
+                date: '12345',
+                'message-id': '67890'
+            }).
+            setContent('Hello world!'),
+
+                expected = 'Content-Type: message/rfc822\r\n' +
+                'Date: 12345\r\n' +
+                'Message-Id: <67890>\r\n' +
+                'MIME-Version: 1.0\r\n' +
+                '\r\n' +
+                'Hello world!';
+
+            mb.build(function (err, msg) {
+                expect(err).to.not.exist;
+                msg = msg.toString();
+                expect(msg).to.equal(expected);
+                done();
+            });
+        });
+
         it('should use from domain for message-id', function (done) {
             var mb = new Buildmail('text/plain').
             setHeader({

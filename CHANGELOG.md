@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.6.0 2016-03-25
+
+  * Do not set default transfer encoding for message/* nodes
+
 ## 3.5.2 2016-02-29
 
   * Fixes an issue with long filenames that include unicode and dashes
