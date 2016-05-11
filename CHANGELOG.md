@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.7.0 2016-05-11
+
+  * Bumped dependencies
+
 ## 3.6.0 2016-03-25
 
   * Do not set default transfer encoding for message/* nodes
