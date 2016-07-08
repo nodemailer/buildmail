@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.8.0 2016-07-08
+
+  * Updated header key casing (Message-Id -> Message-ID)
+  * Set Content-Disposition to 'inline' for attachments with Content-ID set
+  * use UUID-like value for default Message-ID
+
 ## 3.7.0 2016-05-11
 
   * Bumped dependencies

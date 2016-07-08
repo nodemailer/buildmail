@@ -35,6 +35,7 @@ Where
     * **baseBoundary** - *String* shared part of the unique multipart boundary (generated randomly if not set)
     * **keepBcc** - *Boolean* If true keep the Bcc value in generated headers (default is to remove it)
     * **textEncoding** - set default content encoding, either 'base64' or 'quoted-printable'
+    * **hostname** - optional hostname for default Message-Id values. Normally hostname from the `from` address is used but this might not be available
 
 ## Methods
 

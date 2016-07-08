@@ -216,7 +216,7 @@ describe('Buildmail', function () {
 
                 expected = 'Content-Type: text/plain\r\n' +
                 'Date: 12345\r\n' +
-                'Message-Id: <67890>\r\n' +
+                'Message-ID: <67890>\r\n' +
                 'Content-Transfer-Encoding: 7bit\r\n' +
                 'MIME-Version: 1.0\r\n' +
                 '\r\n' +
@@ -258,7 +258,7 @@ describe('Buildmail', function () {
 
                 expected = 'Content-Type: multipart/mixed; boundary="----sinikael-?=_1-test"\r\n' +
                 'Date: 12345\r\n' +
-                'Message-Id: <67890>\r\n' +
+                'Message-ID: <67890>\r\n' +
                 'MIME-Version: 1.0\r\n' +
                 '\r\n' +
                 '------sinikael-?=_1-test\r\n' +
@@ -285,7 +285,7 @@ describe('Buildmail', function () {
                 expect(err).to.not.exist;
                 msg = msg.toString();
                 expect(/^Date:\s/m.test(msg)).to.be.true;
-                expect(/^Message\-Id:\s</m.test(msg)).to.be.true;
+                expect(/^Message\-ID:\s</m.test(msg)).to.be.true;
                 expect(/^MIME-Version: 1.0$/m.test(msg)).to.be.true;
                 done();
             });
@@ -661,7 +661,7 @@ describe('Buildmail', function () {
                 expected = 'Content-Type: text/plain\r\n' +
                 'A: b\r\n' +
                 'Date: zzz\r\n' +
-                'Message-Id: <67890>\r\n' +
+                'Message-ID: <67890>\r\n' +
                 'Content-Transfer-Encoding: 7bit\r\n' +
                 'MIME-Version: 1.0\r\n' +
                 '\r\n' +
@@ -710,7 +710,7 @@ describe('Buildmail', function () {
                 'Unicode: õäöü\r\n' +
 
                 'Date: zzz\r\n' +
-                'Message-Id: <67890>\r\n' +
+                'Message-ID: <67890>\r\n' +
                 'Content-Transfer-Encoding: 7bit\r\n' +
                 'MIME-Version: 1.0\r\n' +
                 '\r\n' +
@@ -734,7 +734,7 @@ describe('Buildmail', function () {
 
                 expected = 'Content-Type: application/x-my-stuff\r\n' +
                 'Date: 12345\r\n' +
-                'Message-Id: <67890>\r\n' +
+                'Message-ID: <67890>\r\n' +
                 'Content-Transfer-Encoding: base64\r\n' +
                 'MIME-Version: 1.0\r\n' +
                 '\r\n' +
@@ -758,7 +758,7 @@ describe('Buildmail', function () {
 
                 expected = 'Content-Type: multipart/global; boundary=abc\r\n' +
                 'Date: 12345\r\n' +
-                'Message-Id: <67890>\r\n' +
+                'Message-ID: <67890>\r\n' +
                 'MIME-Version: 1.0\r\n' +
                 '\r\n' +
                 'Hello world!\r\n' +
@@ -785,7 +785,7 @@ describe('Buildmail', function () {
 
                 expected = 'Content-Type: message/rfc822\r\n' +
                 'Date: 12345\r\n' +
-                'Message-Id: <67890>\r\n' +
+                'Message-ID: <67890>\r\n' +
                 'MIME-Version: 1.0\r\n' +
                 '\r\n' +
                 'Hello world!';
@@ -807,18 +807,18 @@ describe('Buildmail', function () {
             mb.build(function (err, msg) {
                 expect(err).to.not.exist;
                 msg = msg.toString();
-                expect(/^Message-Id: <\d+(\-[a-f0-9]{8}){3}@example\.com>$/m.test(msg)).to.be.true;
+                expect(/^Message-ID: <[0-9a-f\-]+@example\.com>$/m.test(msg)).to.be.true;
                 done();
             });
         });
 
-        it('should fallback to localhost for message-id', function (done) {
+        it('should fallback to hostname for message-id', function (done) {
             var mb = new Buildmail('text/plain');
-
+            mb.hostname = 'abc';
             mb.build(function (err, msg) {
                 expect(err).to.not.exist;
                 msg = msg.toString();
-                expect(/^Message-Id: <\d+(\-[a-f0-9]{8}){3}@localhost>$/m.test(msg)).to.be.true;
+                expect(/^Message-ID: <[0-9a-f\-]+@abc>$/m.test(msg)).to.be.true;
                 done();
             });
         });
@@ -979,6 +979,11 @@ describe('Buildmail', function () {
             expect(mb._normalizeHeaderKey('key')).to.equal('Key');
             expect(mb._normalizeHeaderKey('mime-vERSION')).to.equal('MIME-Version');
             expect(mb._normalizeHeaderKey('-a-long-name')).to.equal('-A-Long-Name');
+            expect(mb._normalizeHeaderKey('some-spf')).to.equal('Some-SPF');
+            expect(mb._normalizeHeaderKey('dkim-some')).to.equal('DKIM-Some');
+            expect(mb._normalizeHeaderKey('x-smtpapi')).to.equal('X-SMTPAPI');
+            expect(mb._normalizeHeaderKey('message-id')).to.equal('Message-ID');
+            expect(mb._normalizeHeaderKey('CONTENT-FEATUres')).to.equal('Content-features');
         });
     });
 
@@ -1113,6 +1118,14 @@ describe('Buildmail', function () {
         });
     });
 
+    describe('#_generateMessageId', function(){
+        it('should generate uuid-looking message-id', function(){
+            var mb = new Buildmail();
+            var mid = mb._generateMessageId();
+            expect(/^<[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}@.*>/.test(mid)).to.be.true;
+        });
+    });
+
     describe('HTTP streaming', function () {
         var port = 10337;
         var server;
@@ -1212,7 +1225,7 @@ describe('Buildmail', function () {
 
             var expected = 'Content-Type:\ttext/plain\r\n' +
                 'Date:\t12345\r\n' +
-                'Message-Id:\t<67890>\r\n' +
+                'Message-ID:\t<67890>\r\n' +
                 'Content-Transfer-Encoding:\t7bit\r\n' +
                 'MIME-Version:\t1.0\r\n' +
                 '\r\n' +
@@ -1273,7 +1286,7 @@ describe('Buildmail', function () {
                 msg = msg.toString();
                 expect(msg).to.equal('Content-Type: multipart/mixed; boundary="----sinikael-?=_1-test"\r\n' +
                     'Date: 12345\r\n' +
-                    'Message-Id: <67890>\r\n' +
+                    'Message-ID: <67890>\r\n' +
                     'MIME-Version: 1.0\r\n' +
                     '\r\n' +
                     '------sinikael-?=_1-test\r\n' +
