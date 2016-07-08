@@ -286,7 +286,7 @@ describe('Buildmail', function () {
                 msg = msg.toString();
                 expect(/^Date:\s/m.test(msg)).to.be.true;
                 expect(/^Message\-ID:\s</m.test(msg)).to.be.true;
-                expect(/^MIME-Version: 1.0$/m.test(msg)).to.be.true;
+                expect(/^MIME-Version: 1\.0$/m.test(msg)).to.be.true;
                 done();
             });
         });
