@@ -284,9 +284,14 @@ describe('Buildmail', function () {
             mb.build(function (err, msg) {
                 expect(err).to.not.exist;
                 msg = msg.toString();
+                console.log(msg);
+                console.log(1);
                 expect(/^Date:\s/m.test(msg)).to.be.true;
+                console.log(2);
                 expect(/^Message\-ID:\s</m.test(msg)).to.be.true;
+                console.log(3);
                 expect(/^MIME-Version: 1\.0$/m.test(msg)).to.be.true;
+                console.log(4);
                 done();
             });
         });
