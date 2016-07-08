@@ -280,18 +280,14 @@ describe('Buildmail', function () {
 
         it('should build root with generated headers', function (done) {
             var mb = new Buildmail('text/plain');
+            mb.hostname = 'abc';
 
             mb.build(function (err, msg) {
                 expect(err).to.not.exist;
                 msg = msg.toString();
-                console.log(msg);
-                console.log(1);
                 expect(/^Date:\s/m.test(msg)).to.be.true;
-                console.log(2);
-                expect(/^Message\-ID:\s</m.test(msg)).to.be.true;
-                console.log(3);
+                expect(/^Message\-ID:\s/m.test(msg)).to.be.true;
                 expect(/^MIME-Version: 1\.0$/m.test(msg)).to.be.true;
-                console.log(4);
                 done();
             });
         });
