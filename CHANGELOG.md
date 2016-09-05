@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.9.0 2016-09-05
+
+  * Added new options disableUrlAccess and disableFileAccess to disallow HTTP or File System usage for attachments/body
+
 ## 3.8.0 2016-07-08
 
   * Updated header key casing (Message-Id -> Message-ID)

@@ -19,9 +19,9 @@
   "dependencies": {
     "addressparser": "1.0.1",
     "libbase64": "0.1.0",
-    "libmime": "2.0.3",
+    "libmime": "2.1.0",
     "libqp": "1.1.0",
-    "nodemailer-fetch": "1.4.0",
+    "nodemailer-fetch": "1.6.0",
     "nodemailer-shared": "1.0.5"
   },
   "devDependencies": {
@@ -30,7 +30,7 @@
     "grunt-cli": "^1.2.0",
     "grunt-eslint": "^19.0.0",
     "grunt-mocha-test": "~0.12.7",
-    "mocha": "^2.5.3",
-    "sinon": "^1.17.4"
+    "mocha": "^3.0.2",
+    "sinon": "^1.17.5"
   }
 }

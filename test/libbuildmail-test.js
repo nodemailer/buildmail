@@ -1127,7 +1127,7 @@ describe('Buildmail', function () {
         });
     });
 
-    describe('HTTP streaming', function () {
+    describe('Attachment streaming', function () {
         var port = 10337;
         var server;
 
@@ -1170,7 +1170,20 @@ describe('Buildmail', function () {
             });
         });
 
-        it('#should return an error on invalid url', function (done) {
+        it('should reject URL attachment', function (done) {
+            var mb = new Buildmail('text/plain', {disableUrlAccess: true}).
+            setContent({
+                href: 'http://localhost:' + port
+            });
+
+            mb.build(function (err, msg) {
+                expect(err).to.exist;
+                expect(msg).to.not.exist;
+                done();
+            });
+        });
+
+        it('should return an error on invalid url', function (done) {
             var mb = new Buildmail('text/plain').
             setContent({
                 href: 'http://__should_not_exist:58888'
@@ -1182,7 +1195,46 @@ describe('Buildmail', function () {
             });
         });
 
-        it('#should return a error for an errored stream', function (done) {
+        it('should pipe file as an attachment', function (done) {
+            var mb = new Buildmail('application/octet-stream').
+            setContent({
+                path: __dirname + '/fixtures/attachment.bin'
+            });
+
+            mb.build(function (err, msg) {
+                expect(err).to.not.exist;
+                msg = msg.toString();
+                expect(/^w7VrdmEK$/m.test(msg)).to.be.true;
+                done();
+            });
+        });
+
+        it('should reject file as an attachment', function (done) {
+            var mb = new Buildmail('application/octet-stream', {disableFileAccess: true}).
+            setContent({
+                path: __dirname + '/fixtures/attachment.bin'
+            });
+
+            mb.build(function (err, msg) {
+                expect(err).to.exist;
+                expect(msg).to.not.exist;
+                done();
+            });
+        });
+
+        it('should return an error on invalid file path', function (done) {
+            var mb = new Buildmail('text/plain').
+            setContent({
+                href: '/ASfsdfsdf/Sdgsgdfg/SDFgdfgdfg'
+            });
+
+            mb.build(function (err) {
+                expect(err).to.exist;
+                done();
+            });
+        });
+
+        it('should return a error for an errored stream', function (done) {
             var s = new PassThrough();
             var mb = new Buildmail('text/plain').
             setContent(s);
@@ -1198,7 +1250,7 @@ describe('Buildmail', function () {
             }, 100);
         });
 
-        it('#should return a stream error', function (done) {
+        it('should return a stream error', function (done) {
             var s = new PassThrough();
             var mb = new Buildmail('text/plain').
             setContent(s);

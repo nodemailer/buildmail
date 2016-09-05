@@ -36,6 +36,8 @@ Where
     * **keepBcc** - *Boolean* If true keep the Bcc value in generated headers (default is to remove it)
     * **textEncoding** - set default content encoding, either 'base64' or 'quoted-printable'
     * **hostname** - optional hostname for default Message-Id values. Normally hostname from the `from` address is used but this might not be available
+    * **disableUrlAccess** - if set to true then fails with an error when a node tries to load content from URL
+    * **disableFileAccess** - if set to true then fails with an error when a node tries to load content from a file
 
 ## Methods
 
