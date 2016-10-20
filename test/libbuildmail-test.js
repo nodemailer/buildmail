@@ -352,13 +352,19 @@ describe('Buildmail', function () {
             }).setEnvelope({
                 from: 'U Name, A Name <a@a.a>',
                 to: 'B Name <b@b.b>, c@c.c',
-                bcc: 'P P P, <u@u.u>'
+                bcc: 'P P P, <u@u.u>',
+                fooField: {
+                    barValue: "foobar"
+                }
             });
             var envelope = mb.getEnvelope();
 
             expect(envelope).to.deep.equal({
                 from: 'a@a.a',
-                to: ['b@b.b', 'c@c.c', 'u@u.u']
+                to: ['b@b.b', 'c@c.c', 'u@u.u'],
+                fooField: {
+                    barValue: "foobar"
+                }
             });
 
             mb.build(function (err, msg) {
