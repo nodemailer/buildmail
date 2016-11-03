@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.11.0 2016-11-03
+
+  * Allow setting additional envelope fields
+
 ## 3.10.0 2016-09-05
 
   * Upgraded dependencies
