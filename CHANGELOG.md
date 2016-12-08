@@ -1,8 +1,10 @@
 # Changelog
 
-## 3.11.0 2016-11-03
+## 4.0.0 2016-12-08
 
-  * Allow setting additional envelope fields
+  * Updated libmime to v3.0.0 that generates encoded-words in a new way
+  * Fixed an issue with encoded-word addresses that were enclosed in parens
+  * Do not use quotes for attachment filenames where only non alphanum char is a dot
 
 ## 3.10.0 2016-09-05
 
