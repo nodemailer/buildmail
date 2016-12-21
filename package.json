@@ -23,7 +23,7 @@
     "libqp": "1.1.0",
     "nodemailer-fetch": "1.6.0",
     "nodemailer-shared": "1.1.0",
-    "punycode": "^2.0.1"
+    "punycode": "^1.4.1"
   },
   "devDependencies": {
     "chai": "~3.5.0",
