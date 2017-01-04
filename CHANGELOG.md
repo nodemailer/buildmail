@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.0.1 2017-01-04
+
+  * Downgraded punycode module to 1.4.1 to fix installation warnings
+  * Fixed an issue with attachment filenames in Content-Type header where special characters did not trigger quotes
+
 ## 4.0.0 2016-12-08
 
   * Updated libmime to v3.0.0 that generates encoded-words in a new way
